@@ -44,6 +44,13 @@ if ! openssl pkcs12 -in "$P12" -passin fd:3 -nokeys -out "$TMP/check.pem" 3<<<"$
   exit 1
 fi
 
+# Make sure it's the right certificate (CI signs with it as "$IDENTITY").
+if ! grep -q "Developer ID Application" "$TMP/check.pem"; then
+  echo "$P12 doesn't contain a Developer ID Application certificate." >&2
+  echo "Export that one from Keychain Access → My Certificates." >&2
+  exit 1
+fi
+
 set_secret() { gh secret set "$1" -R "$REPO" >/dev/null; echo "  set $1"; }
 
 echo "Setting secrets on $REPO:"
