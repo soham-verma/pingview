@@ -1,0 +1,16 @@
+[package]
+name = "pingview-locate"
+version = "0.1.0"
+description = "One-shot device location from the OS (CoreLocation, Windows Geolocation, GeoClue)"
+license = "MIT"
+edition = "2021"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-core-location = "0.3"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.62", features = ["Devices_Geolocation", "Foundation"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+zbus = { version = "5", default-features = false, features = ["blocking-api", "async-io"] }

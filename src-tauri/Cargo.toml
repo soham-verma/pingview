@@ -1,0 +1,33 @@
+[package]
+name = "pingview"
+version = "0.1.0"
+description = "Desktop ADS-B map for a uAvionix pingRX Pro over a USB bridge"
+authors = ["Soham"]
+license = "MIT"
+edition = "2021"
+
+[lib]
+name = "pingview_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serialport = "4"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+pingview-locate = { path = "locate" }
+flate2 = "1"
+rusqlite = { version = "0.40", features = ["bundled"] }
+url = "2"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+tokio = { version = "1", features = ["sync", "time", "macros"] }
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread"] }

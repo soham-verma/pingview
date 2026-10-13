@@ -1,0 +1,1252 @@
+                                 Product         Order        Technical             Tools &         Support &
+                                 Folder          Now          Documents             Software        Community
+
+
+
+                                                                                                                                         BQ24392
+                                                                                           SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017
+
+    BQ24392 Dual SPST USB 2.0 High Speed Switch with USB Battery Charging Specification
+                                  Revision 1.2 Detection
+1 Features                                                              3 Description
+•
+1     USB 2.0 High Speed Switch                                         The BQ24392 is a dual single-pole single-throw
+                                                                        (SPST) USB 2.0 high-speed isolation switch with
+•     Detects USB Battery Charging Specification                        charger detection capabilities for use with micro and
+      Version 1.2 (BCv1.2) Compliant Chargers                           mini-USB ports. This USB switch allows mobile
+•     Compatible Accessories                                            phones, tablets, and other battery operated
+      – Dedicated Charging Port                                         electronics to be charged from different adapters with
+                                                                        minimal system software. The device’s charger
+      – Standard Downstream Port                                        detection circuitry can support USB Battery Charging
+      – Charging Downstream Port                                        Specification version 1.2 (BCv1.2) compliant,
+•     Non-Standard Chargers                                             Apple™, TomTom™, and other non-standard
+                                                                        chargers.
+      – Apple™ Charger
+      – TomTom™ Charger                                                 The BQ24392 device is powered through VBUS when
+                                                                        a charger is attached to the micro or mini-USB port
+      – USB Chargers Not Compliant With Battery                         and has a 28-V tolerance to avoid the need for
+         Charging Specification Version 1.2 (BCv1.2)                    external protection.
+•     –2 V to 28 V VBUS Voltage Range
+•     ESD Performance Tested per JESD 22                                                       Device Information(1)
+      – 4000-V Human-Body Model                                            PART NUMBER              PACKAGE            BODY SIZE (NOM)
+                                                                          BQ24392               UQFN (10)             2.05 mm × 1.55 mm
+      – 1500-V Charged-Device Model (C101)
+•     ESD Performance DP_CON/DM_CON to GND                                (1) For all available packages, see the orderable addendum at
+                                                                              the end of the datasheet.
+      – ±8-kV Contact Discharge (IEC 61000-4-2)
+                                                                        SPACER
+2 Applications                                                          SPACER
+•     Mobile Phones
+                                                                          480-Mbps USB 2.0 Eye Diagram With USB Switch
+•     Smart Phones
+•     Cameras
+•     GPS Systems
+
+
+
+
+                                                                                                                 Copyright © 2017, Texas Instruments Incorporated
+
+
+
+
+1
+
+
+
+
+        An IMPORTANT NOTICE at the end of this data sheet addresses availability, warranty, changes, use in safety-critical applications,
+        intellectual property matters and other important disclaimers. PRODUCTION DATA.
+BQ24392
+SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017                                                                                                                               www.ti.com
+
+
+                                                                           Table of Contents
+    1   Features .................................................................. 1                      7.3 Feature Description................................................... 7
+    2   Applications ........................................................... 1                         7.4 Device Functional Modes.......................................... 8
+    3   Description ............................................................. 1                 8     Application and Implementation .......................... 9
+    4   Revision History..................................................... 2                            8.1 Application Information.............................................. 9
+                                                                                                           8.2 Typical Application ................................................. 10
+    5   Pin Configuration and Functions ......................... 3
+    6   Specifications......................................................... 4                   9 Power Supply Recommendations...................... 11
+         6.1    Absolute Maximum Ratings ...................................... 4                   10 Layout................................................................... 12
+         6.2    ESD Ratings.............................................................. 4                10.1 Layout Guidelines ................................................. 12
+         6.3    Recommended Operating Conditions....................... 4                                  10.2 Layout Example .................................................... 13
+         6.4    Thermal Information .................................................. 4            11 Device and Documentation Support ................. 14
+         6.5    Electrical Characteristics........................................... 5                    11.1     Receiving Notification of Documentation Updates 14
+         6.6    Typical Characteristics .............................................. 5                   11.2     Community Resources.......................................... 14
+    7   Detailed Description .............................................. 6                              11.3     Trademarks ........................................................... 14
+         7.1 Overview ................................................................... 6                11.4     Electrostatic Discharge Caution ............................ 14
+         7.2 Functional Block Diagram ......................................... 6                   12 Mechanical, Packaging, and Orderable
+                                                                                                       Information ........................................................... 14
+
+
+
+4 Revision History
+Changes from Revision F (July 2017) to Revision G                                                                                                                                   Page
+
+•   Changed RON From: 8 Ω TYP To: 3.5 Ω TYP, 6.9 Ω MAX in the Electrical Characteristic table .......................................... 5
+
+
+Changes from Revision E (February 2017) to Revision F                                                                                                                               Page
+
+•   Changed CHG_DET diode direction from right facing to left facing in Application Schematic. .......................................... 10
+
+
+Changes from Revision D (January 2016) to Revision E                                                                                                                                Page
+
+•   Changed From: BQ24932 To: BQ24392 in the Description ................................................................................................... 1
+•   Changed From: BQ24932 To: BQ24392 in the Overview ...................................................................................................... 6
+•   Changed title From: Using the BQ24932 GPIOs To: Using the BQ24392 GPIOs................................................................. 9
+
+
+Changes from Revision C (January 2015) to Revision D                                                                                                                                Page
+
+•   Changed diode direction from left facing to right facing in Application Schematic. ............................................................. 10
+
+
+Changes from Revision B (October 2014) to Revision C                                                                                                                                Page
+
+•   Updated Features. ................................................................................................................................................................. 1
+
+
+Changes from Revision A (June 2012) to Revision B                                                                                                                                   Page
+
+•   Added ESD Rating table, Feature Description section, Device Functional Modes, Application and Implementation
+    section, Power Supply Recommendations section, Layout section, Device and Documentation Support section, and
+    Mechanical, Packaging, and Orderable Information section. ................................................................................................ 1
+
+
+
+
+2        Submit Documentation Feedback                                                                                 Copyright © 2012–2017, Texas Instruments Incorporated
+
+                                                                         Product Folder Links: BQ24392
+                                                                                                                                           BQ24392
+www.ti.com                                                                                              SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017
+
+
+5 Pin Configuration and Functions
+
+                                                                  RSE Package
+                                                                  10-Pin (UQFN)
+                                                                    (Top View)
+
+                                                                   CHG_DET
+
+                                                                        10
+                                         SW_OPEN             1                             9 VBUS
+
+                                         DM_HOST             2                             8      DM_CON
+
+
+                                           DP_HOST           3                             7 DP_CON
+
+
+                                        CHG_AL_N             4                             6       GND
+                                                                         5
+
+                                                                  GOOD_BAT
+                                                                        Copyright © 2017, Texas Instruments Incorporated
+
+
+
+                                                                 Pin Functions
+          PIN
+                           I/O    DESCRIPTION
+ NO.    NAME
+                                  USB switch status indicator
+                                  Open-drain output. 10kΩ external pull-up resistor required
+   1    SW_OPEN             O
+                                  SW_OPEN = LOW indicates when switch is connected
+                                  SW_OPEN = HIGH-Z indicates when then switch is not connected
+   2    DM_HOST            I/O    D– signal to transceiver
+   3    DP_HOST            I/O    D+ signal to transceiver
+                                  Charging status indicator
+                                  Open-drain output. 10kΩ external pull-up resistor required
+   4    CHG_AL_N            O
+                                  CHG_AL_N = LOW indicates when charging is allowed
+                                  CHG_AL_N = HIGH-Z indicates when charging is not allowed
+                                  Battery status indication from system
+   5    GOOD_BAT            I     GOOD_BAT = LOW indicates a dead battery
+                                  GOOD_BAT = HIGH indicates a good battery
+   6    GND                 -     Ground
+   7    DP_CON             I/O    D+ signal from USB connector
+   8    DM_CON             I/O    D– signal from USB connector
+   9    VBUS                I     Supply pin from USB connector
+                                  Charger detection indicator
+                                  Push-Pull output to system
+  10    CHG_DET             O
+                                  CHG_DET = LOW indicates when a charger is not detected
+                                  CHG_DET = HIGH indicates when a charger detected
+
+
+
+
+Copyright © 2012–2017, Texas Instruments Incorporated                                                             Submit Documentation Feedback    3
+                                                         Product Folder Links: BQ24392
+BQ24392
+SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017                                                                                           www.ti.com
+
+
+6 Specifications
+6.1 Absolute Maximum Ratings
+over –40℃ to 85℃ temperature range (unless otherwise noted)
+                                                                                                        MIN                 MAX          UNIT
+                       VBUS                                                                               –2                 28           V
+                       CHG_AL_N                                                                           –2                 28           V
+                       DM_HOST                                                                          –0.3                  7
+                       DP_HOST                                                                          –0.3                  7
+Input Voltage
+                       GOOD_BAT                                                                         –0.3                  7
+                                                                                                                                          V
+                       DP_CON                                                                           –0.3                  7
+                       DM_CON                                                                           –0.3                  7
+                       CHG_DET                                                                          –0.3                  7
+Tstg                   Storage temperature range                                                          65                150           °C
+
+
+6.2 ESD Ratings
+                                                                                                                        VALUE             UNIT
+                                          Human-body model (HBM), per ANSI/ESDA/JEDEC JS-001 (1)                        ±4000
+                                          Charged-device model (CDM), per JEDEC specification JESD22-
+V(ESD)      Electrostatic discharge                                                                                     ±1500               V
+                                          C101 (2)
+                                          IEC Contact discharge pins DP_CON and DM_CON to GND                           ±8000
+
+(1)    JEDEC document JEP155 states that 500-V HBM allows safe manufacturing with a standard ESD control process. Manufacturing with
+       less than 500-V HBM is possible with the necessary precautions.
+(2)    JEDEC document JEP157 states that 250-V CDM allows safe manufacturing with a standard ESD control process. Manufacturing with
+       less than 250-V CDM is possible with the necessary precautions.
+
+6.3 Recommended Operating Conditions
+                                                                                                                   MIN        MAX          UNIT
+VBUS                                                                                                               4.75         5.25          V
+GOOD_BAT                                                                                                                0    VBUS
+DM_HOST                                                                                                                 0         3.6
+DP_HOST                                                                                                                 0         3.6
+DM_CON                                                                                                                  0         3.6
+DP_CON                                                                                                                  0         3.6
+
+
+6.4 Thermal Information
+                                                                                                             bq24392
+                                          THERMAL METRIC (1)                                                    RSE                     UNIT
+                                                                                                               10 PINS
+RθJA               Junction-to-ambient thermal resistance                                                       167.7                   °C/W
+RθJC(top)          Junction-to-case (top) thermal resistance                                                    78.8                    °C/W
+RθJB               Junction-to-board thermal resistance                                                         95.8                    °C/W
+ψJT                Junction-to-top characterization parameter                                                    4.7                    °C/W
+ψJB                Junction-to-board characterization parameter                                                 95.9                    °C/W
+
+(1)    For more information about traditional and new thermal metrics, see the Semiconductor and IC Package Thermal Metrics application
+       report.
+
+
+
+
+4         Submit Documentation Feedback                                                   Copyright © 2012–2017, Texas Instruments Incorporated
+
+                                                          Product Folder Links: BQ24392
+                                                                                                                                                                                 BQ24392
+www.ti.com                                                                                                                  SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017
+
+
+6.5 Electrical Characteristics
+VBUS = 4.5 V to 5.5 V, TA = –40°C to 85°C (unless otherwise noted) (1)
+                          PARAMETER                                                                       TEST CONDITIONS                    MIN           TYP               MAX             UNIT
+VVBUS_VALID         VBUS Valid threshold                                                    Rising VBUS threshold                                             3.5                                  V
+VOH                 CHG_DET                         CHG_DET                                 IOH = –2 mA                                       3.5                          VBUS                    V
+                                                    CHG_DET,
+                    CHG_DET, SW_OPEN,
+VOL                                                 SW_OPEN,                                IOL = 2 mA                                                                          0.4                V
+                    CHG_AL_N
+                                                    CHG_AL_N
+VIH                 High-level input voltage                                                                                                  1.1                                                  V
+VIL                 Low-level input voltage                                                                                                                                     0.5                V
+                                                    GOOD_BAT
+                    Internal pull-down
+RPD                                                                                                                                                         950                                kΩ
+                    resistance
+tDBP                Dead battery provision timer                                                                                                               32                 45         Mins
+                    ON- state resistance match
+VUSBIO                                                                                                                                         0                                3.6                V
+                    between
+RON                 ON-state resistance             DM_CON,                                                                                                   3.5               6.9                Ω
+                                                    DP_CON,                                 VDM_HOST and VDP_HOST = 0 to 3.6 V, IDP_CON
+                    ON-state resistance             DM_HOST,                                and IDM_CON = –2 mA
+RON(flat)                                                                                                                                                     1.1                                  Ω
+                    flatness                        DP_HOST
+                    ON- state resistance match                                              VDM_HOST and VDP_HOST = 0.4 V, IDP_CON and
+ΔRON                                                                                                                                                          0.5                                  Ω
+                    between channels                                                        IDM_CON = –2 mA
+                                                                                            VVBUS = 5V,
+                                                                                                                                                            250                                µA
+                                                                                            VIH(GOOD_BAT)= 1.1 V
+ICC-SW (ON)         Current consumption
+                                                                                            VVBUS = 5 V,
+                                                                                                                                                               80                              µA
+                                                                                            VIH(GOOD_BAT) = 2.5 V
+ICC-SW (OFF)        Current consumption with USB switch off                                 VVBUS = 5 V; USB Switch OFF                                        45                              µA
+                                                                                            VDM_HOST and VDP_HOST = 0 to 3.6 V, IDP_CON
+IUSBI/O (ON)        Leakage current with USB switch on                                                                                                         50                              nA
+                                                                                            and IDM_CON = –2 mA
+IUSBI/O (OFF)       Leakage current with USB switch off                                                                                                        45                              nA
+                    Capacitance with USB            DP_HOST,
+CI(OFF)                                                                                                                                                          2                             pF
+                    switch off                      DM_HOST
+                    Capacitance with USB            DP_CON,
+CO(OFF)                                                                                                                                                        10                              pF
+                    switch off                      DM_CON
+                                                                                            DC bias = 0 V or 3.6 V, f = 10 MHz
+                    Capacitance with USB            DP_HOST,
+CI(ON)                                                                                                                                                         11                              pF
+                    switch on                       DM_HOST
+                    Capacitance with USB            DP_CON,
+CO(ON)                                                                                                                                                         11                              pF
+                    switch on                       DM_CON
+BW                  Bandwidth                                                               RL = 50 Ω, Switch ON                                            920                              MHz
+OISO                Isolation with USB switch off                                           f = 240 MHz, RL = 50 Ω, Switch OFF                              –26                                dB
+XTALK               Crosstalk                                                               f = 240 MHz, RL = 50 Ω                                       –30.5                                 dB
+
+(1)    CHG_DET max value will be clamped at 7 V when VVBUS > 7 V
+
+6.6 Typical Characteristics
+
+
+
+
+                                                 Copyright © 2017, Texas Instruments Incorporated                                               Copyright © 2017, Texas Instruments Incorporated
+
+
+
+
+          Figure 1. 480-Mbps USB 2.0 Eye Diagram with No Device                                             Figure 2. 480-Mbps USB 2.0 Eye Diagram with USB Switch
+
+
+
+Copyright © 2012–2017, Texas Instruments Incorporated                                                                              Submit Documentation Feedback                                       5
+                                                                         Product Folder Links: BQ24392
+BQ24392
+SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017                                                                               www.ti.com
+
+
+7 Detailed Description
+
+7.1 Overview
+The BQ24392 is a USB 2.0 high-speed isolation switch with charger detection capabilities for use with micro and
+mini-USB ports. Upon plugin of a Battery Charging Specification 1.2 (BCv1.2) compliant, Apple™, TomTom™, or
+other USB charger into a micro or mini-USB connector, the device will automatically detect the charger and
+operate the USB 2.0 high-speed isolation switch.
+The BQ24392 device is powered through VBUS when a charger is attached to the micro or mini-USB port and
+has a 28-V tolerance to avoid the need for external protection.
+
+7.2 Functional Block Diagram
+
+
+                                           BQ24392
+
+                                                                    Supply
+                                                                                                     VBUS
+                                                                    Detect
+
+                                                                                                   DM_CON               Micro
+                           DM_HOST                                                                 DP_CON               USB
+            USB
+           HOST                                 Switch
+                           DP_HOST                                                                  ID_CON
+                                                Matrix
+                                                Matrix
+                                                                                                     GND
+
+
+
+
+                          GOOD_BAT
+          SYSTEM
+                                                Logic              DP/DM
+             &             SW_OPEN
+                                                                 Comparator
+         CHARGER
+                           CHG_AL_N
+                           CHG_DET
+
+
+                                                                                 Copyright © 2017, Texas Instruments Incorporated
+
+
+
+
+6      Submit Documentation Feedback                                               Copyright © 2012–2017, Texas Instruments Incorporated
+
+                                                 Product Folder Links: BQ24392
+                                                                                                                                        BQ24392
+www.ti.com                                                                                      SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017
+
+
+7.3 Feature Description
+7.3.1 Charger Detection
+
+                                                               POWERUP
+                                                              VVBUS >VVBUS_UV
+
+
+                                                                    IDLE                     GOOD_BAT = 1
+
+                                                              VVBUS >VVBUS(valid)
+
+
+
+                                                        DATA CONTACT DETECTION
+                                                          600-ms Timeout Feature
+
+
+                                      USB BCv 1.2 compliant                   Not USB BCv 1.2 compliant
+
+
+
+                                                                                             CHECK VOLTAGE LEVEL ON
+                       PRIMARY DETECTION                                                        DP_CON & DM_CON
+
+
+                      SDP charger         Not SDP charger
+
+                                                                                           Apple            TomTom
+                                                    SECONDARY DETECTION                                                    No Charger
+                                                                                          Charger           Charger
+
+
+
+
+             Standard                                Dedicated                   Charging
+          Downstream Port                           Charging Port             Downstream Port
+              (SDP)                                    (DCP)                      (CDP)
+
+       GOOD_BAT=1       GOOD_BAT=0                                     GOOD_BAT=1 GOOD_BAT=0
+
+
+
+
+            USB               USB                                           USB              USB
+         SWITCH ON         SWITCH OFF                                    SWITCH ON        SWITCH OFF
+
+
+
+
+                                                              GOOD_BAT=0
+
+
+
+                                                                 Start Dead
+                                                              Battery Provision
+                                                                (DBP) Timer
+
+
+                                                              32 Mins Expire
+
+
+
+                                                              Disable charging
+
+
+                                                                                              Copyright © 2017, Texas Instruments Incorporated
+
+                                            Figure 3. Charge Detection Block Diagram
+
+
+Copyright © 2012–2017, Texas Instruments Incorporated                                                     Submit Documentation Feedback          7
+                                                         Product Folder Links: BQ24392
+BQ24392
+SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017                                                                                                       www.ti.com
+
+
+Feature Description (continued)
+When a micro or mini-USB accessory is inserted into the connector and once VBUS is greater than VVBUS_VALID
+threshold, the BQ24392 will enter into the Data Contact Detection (DCD) state which includes a 600-ms timeout
+feature that is prescribed in the USB Battery Charging Specification version 1.2 (BCv1.2). If the micro or mini-
+USB accessory is determined to be USB BCv1.2 compliant, a 130-ms debounce period will initiate and the
+BQ24392 will proceed to its primary detection and then secondary detection states to determine if a Dedicated
+Charging Port (DCP), Standard Downstream Port (SDP), or Charging Downstream Port (CDP) is attached to the
+USB-port. The minimum detection time for a DCP, SDP, and CDP is 130 ms, but can be as long as 600 ms due
+to the slow plug in effect.
+If the GOOD_BAT pin is high, the USB 2.0 switches are automatically closed to enable data transfer after the
+device detects a Standard Downstream Port (SDP) or Charging Downstream Port (CDP) was connected.
+If Data Contact Detection (DCD) fails, the BQ24392 proceeds to detect whether an Apple or TomTom charger
+was inserted by checking the voltage level on DP_CON and DM_CON. Thus, for Apple and TomTom chargers,
+detection time typically takes ~600 ms.
+The 3 output pins CHG_AL_N, CHG_DET, and SW_OPEN change their status at the end of detection. Table 1 is
+the detection table with the GPIO status for each type of supported charger. More information on how to use the
+GPIOs is available in Using the BQ24392 GPIOs .
+
+                                                                     Table 1. Detection Table
+                                DP_CON                DM_CON            GOOD_BAT    CHG_AL_N     CHG_DET           SW_OPEN
+    Device Type   VBUS                                                                                                           Switch Status   Charge Current
+                                  (D+)                  (D–)              (Input)    (Output)     (Output)          (Output)
+                                                                                                                                                 Charge with 100
+                                                                                                                                                 mA/ Change the
+     Standard                                                              HIGH       LOW            LOW             LOW           Connected     input current
+                                                    Pull-down R to                                                                               based on
+    Downstream    > 3.5 V   Pull-down R to GND
+                                                         GND                                                                                     enumeration
+       Port
+                                                                                                                                                 Charge with 100
+                                                                           LOW        LOW            LOW             High-Z      Not Connected
+                                                                                                                                                 mA
+                                                                                                                                                 Charge with full
+     Charging                                                              HIGH       LOW            HIGH            LOW           Connected
+                                                                                                                                                 current
+    Downstream    > 3.5 V   Pull-down R to GND         VDM_SRC
+       Port                                                                                                                                      Charge with 100
+                                                                           LOW        LOW            HIGH            High-Z      Not Connected
+                                                                                                                                                 mA
+ Dedicated                                                                                                                                       Charge with full
+                  > 3.5 V      Short to D–           Short to D+            X         LOW            HIGH            High-Z      Not Connected
+Charging Port                                                                                                                                    current
+                                                                                                                                                 Charge with full
+Apple Charger     > 3.5 V   2.0 < VDP_CON < 2.8   2.0 < VDM_CON < 2.8       X         LOW            HIGH            High-Z      Not Connected
+                                                                                                                                                 current
+     TomTom                                                                                                                                      Charge with full
+                  > 3.5 V   2.0 < VDP_CON < 3.1   2.0 < VDM_CON < 3.1       X         LOW            HIGH            High-Z      Not Connected
+     Charger                                                                                                                                     current
+                                                                                                                                                 Charge with 100
+ PS/2 Charger     > 3.5 V   Pull-up R to VVBUS    Pull-up R to VVBUS        X         LOW            LOW             High-Z      Not Connected
+                                                                                                                                                 mA
+Non-compliant                                                                                                                                    Charge with 100
+                  > 3.5 V         Open                  Open                X         LOW            LOW             High-Z      Not Connected
+USB Charger                                                                                                                                      mA
+    Any Device    < 3.5 V         Open                  Open                X         High-Z         LOW             High-Z      Not Connected   No Charge
+ Any Device
+    DBP           > 3.5 V           X                     X                LOW        High-Z         LOW             High-Z      Not Connected   No Charge
+Timer Expired
+
+
+If a charge has been detected and the GOOD_BAT pin is low, a Dead Battery Provision (DBP) timer is initiated.
+If the GOOD_BAT continues to be low for 30 minutes (maximum of 45 minutes), charging is disabled and
+CHG_AL_N goes into the High-Z state to indicate this. Toggling GOOD_BAT high after the DBP timer expires re-
+starts detection and the DBP timer.
+
+7.4 Device Functional Modes
+The BQ24392 has two functional modes USB switch ON and USB switch OFF.
+
+
+
+
+8          Submit Documentation Feedback                                                                   Copyright © 2012–2017, Texas Instruments Incorporated
+
+                                                                     Product Folder Links: BQ24392
+                                                                                                                                 BQ24392
+www.ti.com                                                                                     SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017
+
+
+8 Application and Implementation
+
+                                                           NOTE
+               Information in the following applications sections is not part of the TI component
+               specification, and TI does not warrant its accuracy or completeness. TI’s customers are
+               responsible for determining suitability of components for their purposes. Customers should
+               validate and test their design implementation to confirm system functionality.
+
+
+8.1 Application Information
+8.1.1 Using the BQ24392 GPIOs
+
+8.1.1.1 CHG_AL and CHG_DET
+The BQ24392 has 2 charger indicators, CHG_AL_N and CHG_DET, that the host can use to determine whether
+it can charge and if it can charge at a low or high current. Table 2 demonstrates how these outputs should be
+interpreted. CHG_AL_N is an open drain output and is active when the output of the pin is low. CHG_DET is a
+push-pull output and is high in the active state.
+
+                                                        Table 2. bq24392 Outputs
+
+                  CHG_AL_N                              CHG_DET
+                  High-Z                                X                                   Charging is not allowed
+                  Low                                   Low                                 Low-current charging is allowed
+                  Low                                   High                                High-current charging is allowed
+
+The system must define what is meant by low-current and high-current charging. If CHG_DET is high, a system
+could try to draw 2 A, 1.5 A, or 1.0 A. If the system is trying to support > 1.5-A chargers, then the system has to
+use a charger IC that is capable of monitoring the VBUS voltage as it tries to pull the higher current values. If the
+voltage on VBUS starts to drop because that high of a current is supported then the system has to reduce the
+amount of current it is trying to draw until it finds a stable state with VBUS not dropping.
+
+8.1.1.2 SW_OPEN
+SW_OPEN is an open drain output that indicates whether the USB switches are opened or closed. In the High-Z
+state the switches are open and in the active, or low state, the switches are closed. The host should monitor this
+pin to know when the switches are closed or open.
+
+8.1.1.3 GOOD_BAT
+GOOD_BAT is used by the host controller to indicate the status of the battery to the BQ24392. This pin affects
+the switch status for a SDP or CDP, and it also affects the Dead Battery Provision (DBP) timer as discussed in
+the Charger Detection section.
+
+8.1.1.4 Slow Plug-in Event
+As you insert a charger into the USB receptacle, the pins are configured so that the VBUS and GND pins make
+contact first. This presents a problem as the BQ24392 (or any other charger detection IC) requires access to the
+D+ and D– lines to run detection. This is why the BQ24392 has a standard 130-ms debounce time after VBUS
+valid to run the detection algorithm. This delay helps minimize the effects of the D+ and D– lines making contact
+after VBUS and GND.
+Figure 4 is from the datasheet of a standard male micro-USB connector and shows how the data connections
+(red line) are slightly recessed from the power connections (blue line).
+
+
+
+
+Copyright © 2012–2017, Texas Instruments Incorporated                                                  Submit Documentation Feedback      9
+                                                            Product Folder Links: BQ24392
+BQ24392
+SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017                                                                                  www.ti.com
+
+
+
+
+                                                                                            Data Lines
+
+
+
+
+                                                                                         VBUS and
+                                                                                          Ground
+                           Figure 4. Data Connections Recessed from Power Connections
+
+However, in some cases the charger is inserted very slowly, causing the VBUS and GND to make contact long
+before D+ and D–. Due to this effect, there is no guaranteed detection time as the detection time can vary based
+on how long it takes to insert the charger. If longer than 600 ms is taken to insert the charger into the USB
+receptacle, the detection algorithm of the BQ24392 will timeout and instead of the charger being detected as a
+DCP, it is now detected as a nonstandard charger (D+ and D– floating).
+
+8.2 Typical Application
+The BQ24392 device is used between the micro or mini-USB connector port and USB host to enable and disable
+the USB data path and detect chargers that are inserted into the micro or mini-USB connector.
+
+
+                                                                                        2.2 Ω
+                                                                              VBUS
+                         DM_HOST                                                                1 pF-10 pF
+      USB                                                                                          ESD       0.1 µF
+                                                                                                                      1 µF~
+     HOST                                                                                                             10 µF
+                         DP_HOST
+                                                                                        2.2 Ω
+                                                                              DM_CON
+                                                                                                       1 pF                    USB
+         3.3 V                                                                                         ESD                    PORT
+                                                                                        2.2 Ω
+                                                       BQ24392                DP_CON
+        100 kΩ   10 kΩ      10 kΩ                                                                      1 pF
+                                                                                                       ESD
+
+                             GOOD_BAT                                           GND
+
+
+   SYSTEM                        SW_OPEN
+      &                      CHG_AL_N
+  CHARGER                        CHG_DET
+                         Diode
+                         0.5V
+                                                                                            Copyright © 2017, Texas Instruments Incorporated
+
+                                                Figure 5. Application Schematic
+
+
+
+
+10     Submit Documentation Feedback                                                  Copyright © 2012–2017, Texas Instruments Incorporated
+
+                                                    Product Folder Links: BQ24392
+                                                                                                                                                                 BQ24392
+www.ti.com                                                                                                   SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017
+
+
+Typical Application (continued)
+8.2.1 Design Requirements
+VBUS requires 1μF - 10μF and 0.1-μF bypass capacitors to reduce noise from circuit elements by providing a
+low impedance path to ground for the unwanted high frequency content. The 0.1-μF capacitor filters out higher
+frequencies and has a lower series inductance while the 1μF ~1 0μF capacitor filters out the lower frequencies
+and has a much higher series inductance. Using both capacitors will provide better load regulation across the
+frequency spectrum.
+SW_OPEN and CHG_AL_N are open-drain outputs that require a 10-kΩ pull-up resistor to VDDIO.
+VBUS, DM_CON, and DP_CON are recommended to have an external resistor of 2.2-Ω to provide extra
+ballasting to protect the chip and internal circuitry.
+DM_CON and DP_CON are recommended to have a 1-pF external ESD protection diode rated for 8-kV IEC
+protection to prevent failure in case of an 8-kV IEC contact discharge.
+VBUS is recommended to have a 1-pF ~ 10-pF external ESD Protection Diode rated for 8-kV IEC protection to
+prevent failure in case of an 8-kV IEC contact discharge
+CHG_DET is a push-pull output pin. An external pull-up and diode are shown to depict a typical 3.3-V system.
+The pull-up resistor and diode are optional. The pull-up range on the CHG_DET pin is from 3.5 V to VVBUS. When
+VVBUS > 7 V, CHG_DET will be clamped to 7 V.
+
+8.2.2 Detailed Design Procedure
+The minimum pull-up resistance for the open-drain data lines is a function of the pull-up voltage VPU, output logic
+LOW voltage VOL(max), and Output logic LOW current IOL.
+       RPU(MIN) = (VPU – VOL/MAX) / IOL                                                                                                                                            (1)
+The maximum pull-up resistance for the open-drain data lines is a function of the maximum rise time of the
+desired signal, tr, and the bus capacitance, Cb.
+       RPU(MAX) = tr / (0.8473 × Cb)                                                                                                                                               (2)
+
+8.2.3 Application Curves
+
+
+
+
+                                              Copyright © 2017, Texas Instruments Incorporated                                  Copyright © 2017, Texas Instruments Incorporated
+
+
+        Figure 6. 480-Mbps USB 2.0 Eye Diagram with No Device                                    Figure 7. 480-Mbps USB 2.0 Eye Diagram with USB Switch
+
+
+
+9 Power Supply Recommendations
+Power to the device is supplied through the VBUS pin from the device that is inserted into the mini or micro-USB
+port. The power from the inserted devices should follow the USB 2.0 standard 5 V at 500 mA. VBUS also
+requires 1μF – 10μF and 0.1-μF bypass capacitors to reduce noise from circuit elements by providing a low
+impedance path to ground for the unwanted high frequency content.
+
+
+
+
+Copyright © 2012–2017, Texas Instruments Incorporated                                                              Submit Documentation Feedback                                   11
+                                                                      Product Folder Links: BQ24392
+BQ24392
+SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017                                                                                                             www.ti.com
+
+
+10 Layout
+
+10.1 Layout Guidelines
+Place VBUS bypass capacitors as close to VBUS pin as possible and avoid placing the bypass caps near the
+DP/DM traces.
+The high speed DP/DM traces should always be matched lengths and must be no more than 4 inches;
+otherwise, the eye diagram performance may be degraded. A high-speed USB connection is made through a
+shielded, twisted pair cable with a differential characteristic impedance of 90 Ω ±15%. In layout, the impedance
+of DP and DM traces should match the cable characteristic differential 90-Ω impedance.
+Route the high-speed USB signals on the plane closest to the ground plane, whenever possible.
+Route the high-speed USB signals using a minimum of vias and corners. This reduces signal reflections and
+impedance changes. When a via must be used, increase the clearance size around it to minimize its
+capacitance. Each via introduces discontinuities in the signal’s transmission line and increases the chance of
+picking up interference from the other layers of the board. Be careful when designing test points on twisted pair
+lines; through-hole pins are not recommended.
+When it becomes necessary to turn 90°, use two 45° turns or an arc instead of making a single 90° turn. This
+reduces reflections on the signal traces by minimizing impedance discontinuities.
+Do not route USB traces under or near crystals, oscillators, clock signal generators, switching regulators,
+mounting holes, magnetic devices or IC’s that use or duplicate clock signals.
+Avoid stubs on the high-speed USB signals because they cause signal reflections. If a stub is unavoidable, then
+the stub should be less than 200 mils.
+Route all high-speed USB signal traces over continuous planes (VCC or GND), with no interruptions.
+Avoid crossing over anti-etch, commonly found with plane splits.
+Due to high frequencies associated with the USB, a printed circuit board with at least four layers is
+recommended; two signal layers separated by a ground and power layer as shown in Figure 8.
+
+                                                                                                       Signal 1
+
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                                                                       GND Plane
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                                                                       Power Plane
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                                             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+
+
+                                                                                                       Signal 2
+
+                                            Copyright © 2017, Texas Instruments Incorporated
+
+                                          Figure 8. Four-Layer Board Stack-Up
+
+The majority of signal traces should run on a single layer, preferably SIGNAL1. Immediately next to this layer
+should be the GND plane, which is solid with no cuts. Avoid running signal traces across a split in the ground or
+power plane. Sufficient decoupling must be used when running signal traces across split planes is unavoidable.
+Minimizing the number of signal vias reduces EMI by reducing inductance at high frequencies.
+
+
+
+
+12     Submit Documentation Feedback                                                                              Copyright © 2012–2017, Texas Instruments Incorporated
+
+                                                  Product Folder Links: BQ24392
+                                                                                                                                      BQ24392
+www.ti.com                                                                                          SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017
+
+
+10.2 Layout Example
+                             LEGEND
+
+       VIA to VBUS Plane               Polygonal Copper Pour
+
+        VIA to GND Plane (Inner Layer)                                       Pull
+                                                                             resistor
+
+                                                        To controller
+
+                                  Pull-up                                                               Bypass capacitors
+                                  resistor
+                                                                                   Ballast protection
+                                                                        10
+                                                                   CHG_DET
+                                                    1   SW_OPEN                     VBUS      9
+
+
+                                                    2   DM_HOST                  DM_CON       8
+
+USB connector       Impedance matched USB traces                                              Impedance matched USB traces        USB connector
+                                                    3   DP_HOST                  DP_CON       7
+
+
+                                                    4   CHG_AL_N                        GND   6
+                                                                  GOOD_BAT
+                                                                        5
+
+
+      To controller               Pull-up
+                                  resistor
+
+
+                                                                 From Controller
+
+                                                  Figure 9. Package Layout Example
+
+
+
+
+Copyright © 2012–2017, Texas Instruments Incorporated                                                     Submit Documentation Feedback       13
+                                                         Product Folder Links: BQ24392
+BQ24392
+SLIS146G – JUNE 2012 – REVISED SEPTEMBER 2017                                                                                   www.ti.com
+
+
+11 Device and Documentation Support
+
+11.1 Receiving Notification of Documentation Updates
+To receive notification of documentation updates, navigate to the device product folder on ti.com. In the upper
+right corner, click on Alert me to register and receive a weekly digest of any product information that has
+changed. For change details, review the revision history included in any revised document.
+
+11.2 Community Resources
+The following links connect to TI community resources. Linked contents are provided "AS IS" by the respective
+contributors. They do not constitute TI specifications and do not necessarily reflect TI's views; see TI's Terms of
+Use.
+TI E2E™ Online Community TI's Engineer-to-Engineer (E2E) Community. Created to foster collaboration
+           among engineers. At e2e.ti.com, you can ask questions, share knowledge, explore ideas and help
+           solve problems with fellow engineers.
+Design Support TI's Design Support Quickly find helpful E2E forums along with design support tools and
+           contact information for technical support.
+
+11.3 Trademarks
+E2E is a trademark of Texas Instruments.
+Apple is a trademark of Apple.
+TomTom is a trademark of TomTom International.
+All other trademarks are the property of their respective owners.
+11.4 Electrostatic Discharge Caution
+         These devices have limited built-in ESD protection. The leads should be shorted together or the device placed in conductive foam
+         during storage or handling to prevent electrostatic damage to the MOS gates.
+
+
+
+12 Mechanical, Packaging, and Orderable Information
+The following pages include mechanical, packaging, and orderable information. This information is the most
+current data available for the designated devices. This data is subject to change without notice and revision of
+this document. For browser-based versions of this data sheet, refer to the left-hand navigation.
+
+
+
+
+14     Submit Documentation Feedback                                                    Copyright © 2012–2017, Texas Instruments Incorporated
+
+                                                     Product Folder Links: BQ24392
+                                                                                                                                                                      PACKAGE OPTION ADDENDUM
+
+       www.ti.com                                                                                                                                                                                                   10-Nov-2025
+
+
+
+
+PACKAGING INFORMATION
+
+       Orderable part number          Status     Material type      Package | Pins      Package qty | Carrier        RoHS             Lead finish/              MSL rating/               Op temp (°C)          Part marking
+                                        (1)            (2)                                                             (3)            Ball material             Peak reflow                                           (6)
+                                                                                                                                            (4)                      (5)
+
+           BQ24392RSER                Active      Production       UQFN (RSE) | 10       3000 | LARGE T&R             Yes        NIPDAU | NIPDAUAG Level-1-260C-UNLIM                       -40 to 85                APH
+          BQ24392RSER.B               Active      Production       UQFN (RSE) | 10       3000 | LARGE T&R             Yes                NIPDAU            Level-1-260C-UNLIM               -40 to 85                APH
+
+(1)
+      Status: For more details on status, see our product life cycle.
+
+(2)
+   Material type: When designated, preproduction parts are prototypes/experimental devices, and are not yet approved or released for full production. Testing and final process, including without limitation quality assurance,
+reliability performance testing, and/or process qualification, may not yet be complete, and this item is subject to further changes or possible discontinuation. If available for ordering, purchases will be subject to an additional
+waiver at checkout, and are intended for early internal evaluation purposes only. These items are sold without warranties of any kind.
+
+(3)
+      RoHS values: Yes, No, RoHS Exempt. See the TI RoHS Statement for additional information and value definition.
+
+(4)
+   Lead finish/Ball material: Parts may have multiple material finish options. Finish options are separated by a vertical ruled line. Lead finish/Ball material values may wrap to two lines if the finish value exceeds the maximum
+column width.
+
+(5)
+  MSL rating/Peak reflow: The moisture sensitivity level ratings and peak solder (reflow) temperatures. In the event that a part has multiple moisture sensitivity ratings, only the lowest level per JEDEC standards is shown.
+Refer to the shipping label for the actual reflow temperature that will be used to mount the part to the printed circuit board.
+
+(6)
+      Part marking: There may be an additional marking, which relates to the logo, the lot trace code information, or the environmental category of the part.
+
+Multiple part markings will be inside parentheses. Only one part marking contained in parentheses and separated by a "~" will appear on a part. If a line is indented then it is a continuation of the previous line and the two
+combined represent the entire part marking for that device.
+
+Important Information and Disclaimer:The information provided on this page represents TI's knowledge and belief as of the date that it is provided. TI bases its knowledge and belief on information provided by third parties, and
+makes no representation or warranty as to the accuracy of such information. Efforts are underway to better integrate information from third parties. TI has taken and continues to take reasonable steps to provide representative
+and accurate information but may not have conducted destructive testing or chemical analysis on incoming materials and chemicals. TI and TI suppliers consider certain information to be proprietary, and thus CAS numbers
+and other limited information may not be available for release.
+
+In no event shall TI's liability arising out of such information exceed the total purchase price of the TI part(s) at issue in this document sold by TI to Customer on an annual basis.
+
+OTHER QUALIFIED VERSIONS OF BQ24392 :
+
+• Automotive : BQ24392-Q1
+
+
+
+                                                                                                          Addendum-Page 1
+                                                                                                                          PACKAGE OPTION ADDENDUM
+
+   www.ti.com                                                                                                                               10-Nov-2025
+
+
+
+
+NOTE: Qualified Version Definitions:
+
+       • Automotive - Q100 devices qualified for high-reliability automotive applications targeting zero defects
+
+
+
+
+                                                                                                        Addendum-Page 2
+                                                                               PACKAGE MATERIALS INFORMATION
+
+www.ti.com                                                                                                                                       18-Sep-2026
+
+
+
+TAPE AND REEL INFORMATION
+
+       REEL DIMENSIONS                                                                      TAPE DIMENSIONS
+                                                                                       K0         P1
+
+
+
+                                                                                                                         B0 W
+                                        Reel
+                                      Diameter
+                                                                                    Cavity             A0
+                                                                A0   Dimension designed to accommodate the component width
+                                                                B0   Dimension designed to accommodate the component length
+                                                                K0   Dimension designed to accommodate the component thickness
+                                                                W    Overall width of the carrier tape
+                                                                P1   Pitch between successive cavity centers
+
+
+                                       Reel Width (W1)
+                              QUADRANT ASSIGNMENTS FOR PIN 1 ORIENTATION IN TAPE
+
+                                                                                                        Sprocket Holes
+
+
+                                                 Q1        Q2          Q1    Q2
+
+                                                 Q3        Q4          Q3    Q4                    User Direction of Feed
+
+
+
+                                                            Pocket Quadrants
+
+
+*All dimensions are nominal
+             Device           Package Package Pins              SPQ       Reel   Reel   A0                     B0         K0     P1     W     Pin1
+                               Type Drawing                             Diameter Width (mm)                   (mm)       (mm)   (mm)   (mm) Quadrant
+                                                                          (mm) W1 (mm)
+      BQ24392RSER              UQFN     RSE           10        3000        180.0           8.4        1.68   2.13       0.76   4.0    8.0     Q1
+      BQ24392RSER              UQFN     RSE           10        3000        180.0           8.4        1.68   2.13       0.76   4.0    8.0     Q1
+
+
+
+
+                                                                      Pack Materials-Page 1
+                                                                PACKAGE MATERIALS INFORMATION
+
+www.ti.com                                                                                                              18-Sep-2026
+
+
+
+ TAPE AND REEL BOX DIMENSIONS
+
+
+
+
+                                                               Width (mm)
+                                                                              H
+
+
+
+
+                      W                                   L
+
+
+
+
+*All dimensions are nominal
+             Device           Package Type   Package Drawing   Pins         SPQ    Length (mm)   Width (mm)   Height (mm)
+      BQ24392RSER                UQFN             RSE           10          3000      202.0        201.0         28.0
+      BQ24392RSER                UQFN             RSE           10          3000      210.0        185.0         35.0
+
+
+
+
+                                                        Pack Materials-Page 2
+                                                                                                                   PACKAGE OUTLINE
+RSE0010A                                                        SCALE 7.000
+                                                                                                               UQFN - 0.6 mm max height
+                                                                                                                   PLASTIC QUAD FLATPACK - NO LEAD
+
+
+
+                                                        1.55
+                                      B                                                     A
+                                                        1.45
+
+
+
+
+                   PIN 1 INDEX AREA
+                                                                                        2.05
+                                                                                        1.95
+
+
+
+
+                            0.6                                                                      C
+                            0.5
+
+                                                                                                          SEATING PLANE
+                               0.05
+                               0.00                                                                  0.05 C
+                                              0.35
+                                           2X
+                                              0.25                                          0.4
+                                      0.1   C A B                                      8X
+                                                                                            0.3                                       (0.12)
+                                      0.05   C                                                     0.45                               TYP
+                                                                                                2X
+                                                        5                                          0.35
+
+                                           4
+                                                                                   6
+
+
+
+
+                                                                                   SYMM
+                              2X
+                              1.5
+
+
+                                                                                                              0.25
+                                                                                                         4X
+                                                                                                              0.15
+                                                                                   9                            0.1    C A B
+                                           1
+                           6X 0.5                                                                               0.05    C
+                                                      10
+                                         PIN 1 ID                                                    0.3
+                                                       SYMM                                     4X
+                                       (45 X 0.1)                                                    0.2
+                                                                                                      0.1       C A B
+                                                                                                      0.05       C
+                                                                                                                                  4220307/A 03/2020
+
+NOTES:
+
+1. All linear dimensions are in millimeters. Any dimensions in parenthesis are for reference only. Dimensioning and tolerancing
+   per ASME Y14.5M.
+2. This drawing is subject to change without notice.
+
+
+
+
+                                                                              www.ti.com
+                                                                                   EXAMPLE BOARD LAYOUT
+RSE0010A                                                                                      UQFN - 0.6 mm max height
+                                                                                                  PLASTIC QUAD FLATPACK - NO LEAD
+
+
+
+
+                                                                   SYMM
+                                                (R0.05) TYP
+                                                                   10           2X (0.6)
+                                    8X (0.55)
+
+
+
+                                                1                                             9
+
+                              4X (0.25)
+
+
+
+                                                                                                     SYMM
+                                    6X (0.5)                                                                  (1.8)
+
+
+
+                                                                                                      4X
+                                                                                                      (0.2)
+
+                                                4                                             6
+
+
+
+
+                                                                    5
+                                                                             2X (0.3)
+
+                                                                    (1.35)
+
+                                                      LAND PATTERN EXAMPLE
+                                                         EXPOSED METAL SHOWN
+                                                              SCALE:30X
+
+                         0.07 MAX                                            0.07 MIN
+                     ALL AROUND                                          ALL AROUND
+                                                       METAL                                              SOLDER MASK
+                                                                                                          OPENING
+
+
+                      EXPOSED
+                        METAL                           SOLDER MASK          EXPOSED                          METAL
+                                                        OPENING                METAL                          UNDER
+                                                                                                              SOLDER MASK
+                                 NON SOLDER MASK                                           SOLDER MASK
+                                     DEFINED                                                 DEFINED
+                                   (PREFERRED)
+
+
+                                                     SOLDER MASK DETAILS
+                                                              NOT TO SCALE
+
+
+                                                                                                                      4220307/A 03/2020
+
+NOTES: (continued)
+
+3. For more information, see Texas Instruments literature number SLUA271 (www.ti.com/lit/slua271).
+
+
+
+
+                                                                   www.ti.com
+                                                                                 EXAMPLE STENCIL DESIGN
+RSE0010A                                                                                    UQFN - 0.6 mm max height
+                                                                                              PLASTIC QUAD FLATPACK - NO LEAD
+
+
+
+
+                                                              SYMM
+
+
+                                               (R0.05) TYP                 2X (0.6)
+                                                                   10
+
+                               8X (0.55)
+
+
+                                           1                                            9
+
+                           4X (0.25)
+
+
+                                                                                               SYMM
+                               6X (0.5)                                                                    (1.8)
+
+
+
+                                                                                                4X (0.2)
+
+                                           4                                            6
+
+
+
+
+                                                               5
+                                                                         2X
+                                                                         (0.3)
+
+
+                                                               (1.35)
+
+
+                                                    SOLDER PASTE EXAMPLE
+                                                     BASED ON 0.1 mm THICKNESS
+                                                            SCALE: 30X
+
+
+
+
+                                                                                                                   4220307/A 03/2020
+
+NOTES: (continued)
+
+5. Laser cutting apertures with trapezoidal walls and rounded corners may offer better paste release. IPC-7525 may have alternate
+  design recommendations.
+
+
+
+
+                                                                   www.ti.com
+                                         IMPORTANT NOTICE AND DISCLAIMER
+TI PROVIDES TECHNICAL AND RELIABILITY DATA (INCLUDING DATASHEETS), DESIGN RESOURCES (INCLUDING REFERENCE
+DESIGNS), APPLICATION OR OTHER DESIGN ADVICE, WEB TOOLS, SAFETY INFORMATION, AND OTHER RESOURCES “AS IS”
+AND WITH ALL FAULTS, AND DISCLAIMS ALL WARRANTIES, EXPRESS AND IMPLIED, INCLUDING WITHOUT LIMITATION ANY
+IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT OF THIRD
+PARTY INTELLECTUAL PROPERTY RIGHTS.
+These resources are intended for skilled developers designing with TI products. You are solely responsible for (1) selecting the appropriate
+TI products for your application, (2) designing, validating and testing your application, and (3) ensuring your application meets applicable
+standards, and any other safety, security, regulatory or other requirements.
+These resources are subject to change without notice. TI grants you permission to use these resources only for development of an
+application that uses the TI products described in the resource. Other reproduction and display of these resources is prohibited. No license
+is granted to any other TI intellectual property right or to any third party intellectual property right. TI disclaims responsibility for, and you fully
+indemnify TI and its representatives against any claims, damages, costs, losses, and liabilities arising out of your use of these resources.
+TI’s products are provided subject to TI’s Terms of Sale, TI’s General Quality Guidelines, or other applicable terms available either on
+ti.com or provided in conjunction with such TI products. TI’s provision of these resources does not expand or otherwise alter TI’s applicable
+warranties or warranty disclaimers for TI products. Unless TI explicitly designates a product as custom or customer-specified, TI products
+are standard, catalog, general purpose devices.
+TI objects to and rejects any additional or different terms you may propose.
+IMPORTANT NOTICE
+
+                                                Copyright © 2026, Texas Instruments Incorporated
+                                                                Last updated 10/2025
+

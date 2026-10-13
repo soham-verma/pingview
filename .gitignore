@@ -1,0 +1,39 @@
+# Dependencies and build output
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/locate/target/
+firmware/**/build/
+coverage/
+*.tsbuildinfo
+__pycache__/
+.venv/
+
+# Secrets: signing certificates, API keys, environment files
+keys/
+*.p8
+*.p12
+*.pem
+*.key
+*.cer
+*.mobileprovision
+.env
+.env.*
+
+# Release artifacts
+*.dmg
+*.msi
+*.AppImage
+*.deb
+
+# Large map files (the built-in one is fetched by scripts/fetch_basemap.sh)
+basemap-data/
+*.pmtiles
+*.mbtiles
+
+# Local runtime data and OS/editor clutter
+history/
+*.log
+.DS_Store
+.idea/

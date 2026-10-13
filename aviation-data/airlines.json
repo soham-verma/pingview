@@ -1,0 +1,803 @@
+{
+  "_source": "OpenFlights airlines.dat (https://openflights.org/data, ODbL), ICAO prefix subset",
+  "AAL": {
+    "name": "American Airlines",
+    "telephony": "AMERICAN"
+  },
+  "AAR": {
+    "name": "Asiana Airlines",
+    "telephony": "ASIANA"
+  },
+  "AAY": {
+    "name": "Allegiant Air",
+    "telephony": "ALLEGIANT"
+  },
+  "ABY": {
+    "name": "Air Arabia",
+    "telephony": "ARABIA"
+  },
+  "ACA": {
+    "name": "Air Canada",
+    "telephony": "AIR CANADA"
+  },
+  "ACI": {
+    "name": "Aircalin",
+    "telephony": "AIRCALIN"
+  },
+  "AEA": {
+    "name": "Air Europa",
+    "telephony": "EUROPA"
+  },
+  "AEE": {
+    "name": "Aegean Airlines",
+    "telephony": "AEGEAN"
+  },
+  "AFL": {
+    "name": "Aeroflot",
+    "telephony": "AEROFLOT"
+  },
+  "AFR": {
+    "name": "Air France",
+    "telephony": "AIRFRANS"
+  },
+  "AIC": {
+    "name": "Air India",
+    "telephony": "AIRINDIA"
+  },
+  "AIQ": {
+    "name": "Thai AirAsia",
+    "telephony": "THAI ASIA"
+  },
+  "AKJ": {
+    "name": "Akasa Air",
+    "telephony": "AKASA AIR"
+  },
+  "ALK": {
+    "name": "SriLankan Airlines",
+    "telephony": "SRILANKAN"
+  },
+  "AMU": {
+    "name": "Air Macau",
+    "telephony": "AIR MACAO"
+  },
+  "AMX": {
+    "name": "Aeromexico",
+    "telephony": "AEROMEXICO"
+  },
+  "ANA": {
+    "name": "All Nippon Airways",
+    "telephony": "ALL NIPPON"
+  },
+  "ANG": {
+    "name": "Air Niugini",
+    "telephony": "NIUGINI"
+  },
+  "ANO": {
+    "name": "Airnorth",
+    "telephony": "TOPEND"
+  },
+  "ANZ": {
+    "name": "Air New Zealand",
+    "telephony": "NEW ZEALAND"
+  },
+  "APJ": {
+    "name": "Peach Aviation",
+    "telephony": "AIR PEACH"
+  },
+  "ARG": {
+    "name": "Aerolineas Argentinas",
+    "telephony": "ARGENTINA"
+  },
+  "ASA": {
+    "name": "Alaska Airlines",
+    "telephony": "ALASKA"
+  },
+  "ASL": {
+    "name": "Air Serbia",
+    "telephony": "AIR SERBIA"
+  },
+  "ASY": {
+    "name": "Royal Australian Air Force",
+    "telephony": "AUSSIE"
+  },
+  "AUA": {
+    "name": "Austrian",
+    "telephony": "AUSTRIAN"
+  },
+  "AVA": {
+    "name": "Avianca",
+    "telephony": "AVIANCA"
+  },
+  "AVN": {
+    "name": "Air Vanuatu",
+    "telephony": "AIR VAN"
+  },
+  "AWQ": {
+    "name": "Indonesia AirAsia",
+    "telephony": "WAGON AIR"
+  },
+  "AXB": {
+    "name": "Air India Express",
+    "telephony": "EXPRESS INDIA"
+  },
+  "AXM": {
+    "name": "AirAsia",
+    "telephony": "ASIAN EXPRESS"
+  },
+  "AZU": {
+    "name": "Azul Brazilian Airlines",
+    "telephony": "AZUL"
+  },
+  "BAV": {
+    "name": "Bamboo Airways",
+    "telephony": "BAMBOO"
+  },
+  "BAW": {
+    "name": "British Airways",
+    "telephony": "SPEEDBIRD"
+  },
+  "BBC": {
+    "name": "Biman Bangladesh Airlines",
+    "telephony": "BANGLADESH"
+  },
+  "BCS": {
+    "name": "European Air Transport (DHL)",
+    "telephony": "EUROTRANS"
+  },
+  "BEL": {
+    "name": "Brussels Airlines",
+    "telephony": "BEELINE"
+  },
+  "BKP": {
+    "name": "Bangkok Airways",
+    "telephony": "BANGKOK AIR"
+  },
+  "BOX": {
+    "name": "AeroLogic",
+    "telephony": "GERMAN CARGO"
+  },
+  "BTI": {
+    "name": "airBaltic",
+    "telephony": "AIRBALTIC"
+  },
+  "BTK": {
+    "name": "Batik Air",
+    "telephony": "BATIK"
+  },
+  "CAL": {
+    "name": "China Airlines",
+    "telephony": "DYNASTY"
+  },
+  "CCA": {
+    "name": "Air China",
+    "telephony": "AIR CHINA"
+  },
+  "CDG": {
+    "name": "Shandong Airlines",
+    "telephony": "SHANDONG"
+  },
+  "CEB": {
+    "name": "Cebu Pacific",
+    "telephony": "CEBU"
+  },
+  "CES": {
+    "name": "China Eastern",
+    "telephony": "CHINA EASTERN"
+  },
+  "CFC": {
+    "name": "Canadian Forces",
+    "telephony": "CANFORCE"
+  },
+  "CFE": {
+    "name": "BA CityFlyer",
+    "telephony": "FLYER"
+  },
+  "CFG": {
+    "name": "Condor",
+    "telephony": "CONDOR"
+  },
+  "CFH": {
+    "name": "CareFlight",
+    "telephony": "CARE FLIGHT"
+  },
+  "CHH": {
+    "name": "Hainan Airlines",
+    "telephony": "HAINAN"
+  },
+  "CKS": {
+    "name": "Kalitta Air",
+    "telephony": "CONNIE"
+  },
+  "CLX": {
+    "name": "Cargolux",
+    "telephony": "CARGOLUX"
+  },
+  "CMP": {
+    "name": "Copa Airlines",
+    "telephony": "COPA"
+  },
+  "CNV": {
+    "name": "US Navy",
+    "telephony": "CONVOY"
+  },
+  "CPA": {
+    "name": "Cathay Pacific",
+    "telephony": "CATHAY"
+  },
+  "CQH": {
+    "name": "Spring Airlines",
+    "telephony": "AIR SPRING"
+  },
+  "CRK": {
+    "name": "Hong Kong Airlines",
+    "telephony": "BAUHINIA"
+  },
+  "CSA": {
+    "name": "Czech Airlines",
+    "telephony": "CSA-LINES"
+  },
+  "CSC": {
+    "name": "Sichuan Airlines",
+    "telephony": "SICHUAN"
+  },
+  "CSN": {
+    "name": "China Southern",
+    "telephony": "CHINA SOUTHERN"
+  },
+  "CSZ": {
+    "name": "Shenzhen Airlines",
+    "telephony": "SHENZHEN AIR"
+  },
+  "CTN": {
+    "name": "Croatia Airlines",
+    "telephony": "CROATIA"
+  },
+  "CVA": {
+    "name": "Air Chathams",
+    "telephony": "CHATHAM"
+  },
+  "CXA": {
+    "name": "Xiamen Airlines",
+    "telephony": "XIAMEN AIR"
+  },
+  "DAH": {
+    "name": "Air Algerie",
+    "telephony": "AIR ALGERIE"
+  },
+  "DAL": {
+    "name": "Delta Air Lines",
+    "telephony": "DELTA"
+  },
+  "DHK": {
+    "name": "DHL Air UK",
+    "telephony": "WORLD EXPRESS"
+  },
+  "DKH": {
+    "name": "Juneyao Airlines",
+    "telephony": "AIR JUNEYAO"
+  },
+  "DLH": {
+    "name": "Lufthansa",
+    "telephony": "LUFTHANSA"
+  },
+  "EAQ": {
+    "name": "Eastern Australia Airlines",
+    "telephony": "EASTERN"
+  },
+  "EDW": {
+    "name": "Edelweiss Air",
+    "telephony": "EDELWEISS"
+  },
+  "EIN": {
+    "name": "Aer Lingus",
+    "telephony": "SHAMROCK"
+  },
+  "EJA": {
+    "name": "NetJets",
+    "telephony": "EXECJET"
+  },
+  "ELY": {
+    "name": "El Al",
+    "telephony": "ELAL"
+  },
+  "ETD": {
+    "name": "Etihad Airways",
+    "telephony": "ETIHAD"
+  },
+  "ETH": {
+    "name": "Ethiopian Airlines",
+    "telephony": "ETHIOPIAN"
+  },
+  "EVA": {
+    "name": "EVA Air",
+    "telephony": "EVA"
+  },
+  "EWG": {
+    "name": "Eurowings",
+    "telephony": "EUROWINGS"
+  },
+  "EXS": {
+    "name": "Jet2",
+    "telephony": "CHANNEX"
+  },
+  "EZY": {
+    "name": "easyJet",
+    "telephony": "EASY"
+  },
+  "FAF": {
+    "name": "French Air Force",
+    "telephony": "FRENCH AIR FORCE"
+  },
+  "FDB": {
+    "name": "flydubai",
+    "telephony": "SKYDUBAI"
+  },
+  "FDN": {
+    "name": "Flying Doctor",
+    "telephony": "FLYDOC"
+  },
+  "FDX": {
+    "name": "FedEx",
+    "telephony": "FEDEX"
+  },
+  "FFT": {
+    "name": "Frontier Airlines",
+    "telephony": "FRONTIER FLIGHT"
+  },
+  "FIN": {
+    "name": "Finnair",
+    "telephony": "FINNAIR"
+  },
+  "FJI": {
+    "name": "Fiji Airways",
+    "telephony": "FIJI"
+  },
+  "GAF": {
+    "name": "German Air Force",
+    "telephony": "GERMAN AIR FORCE"
+  },
+  "GCR": {
+    "name": "Tianjin Airlines",
+    "telephony": "BO HAI"
+  },
+  "GFA": {
+    "name": "Gulf Air",
+    "telephony": "GULF AIR"
+  },
+  "GIA": {
+    "name": "Garuda Indonesia",
+    "telephony": "INDONESIA"
+  },
+  "GLO": {
+    "name": "GOL Linhas Aereas",
+    "telephony": "GOL"
+  },
+  "GTI": {
+    "name": "Atlas Air",
+    "telephony": "GIANT"
+  },
+  "HAL": {
+    "name": "Hawaiian Airlines",
+    "telephony": "HAWAIIAN"
+  },
+  "HKE": {
+    "name": "HK Express",
+    "telephony": "HONGKONG SHUTTLE"
+  },
+  "HVN": {
+    "name": "Vietnam Airlines",
+    "telephony": "VIET NAM AIRLINES"
+  },
+  "IBE": {
+    "name": "Iberia",
+    "telephony": "IBERIA"
+  },
+  "ICE": {
+    "name": "Icelandair",
+    "telephony": "ICEAIR"
+  },
+  "IGO": {
+    "name": "IndiGo",
+    "telephony": "IFLY"
+  },
+  "ITY": {
+    "name": "ITA Airways",
+    "telephony": "ITARROW"
+  },
+  "JAL": {
+    "name": "Japan Airlines",
+    "telephony": "JAPANAIR"
+  },
+  "JBU": {
+    "name": "JetBlue Airways",
+    "telephony": "JETBLUE"
+  },
+  "JJA": {
+    "name": "Jeju Air",
+    "telephony": "JEJU AIR"
+  },
+  "JJP": {
+    "name": "Jetstar Japan",
+    "telephony": "ORANGE LINER"
+  },
+  "JSA": {
+    "name": "Jetstar Asia",
+    "telephony": "JETSTAR ASIA"
+  },
+  "JST": {
+    "name": "Jetstar",
+    "telephony": "JETSTAR"
+  },
+  "JTD": {
+    "name": "Jetstar Asia",
+    "telephony": "JETSTAR ASIA"
+  },
+  "KAC": {
+    "name": "Kuwait Airways",
+    "telephony": "KUWAITI"
+  },
+  "KAL": {
+    "name": "Korean Air",
+    "telephony": "KOREANAIR"
+  },
+  "KLC": {
+    "name": "KLM Cityhopper",
+    "telephony": "CITY"
+  },
+  "KLM": {
+    "name": "KLM",
+    "telephony": "KLM"
+  },
+  "KQA": {
+    "name": "Kenya Airways",
+    "telephony": "KENYA"
+  },
+  "KZR": {
+    "name": "Air Astana",
+    "telephony": "ASTANALINE"
+  },
+  "LAN": {
+    "name": "LATAM Airlines Chile",
+    "telephony": "LAN CHILE"
+  },
+  "LGL": {
+    "name": "Luxair",
+    "telephony": "LUXAIR"
+  },
+  "LNI": {
+    "name": "Lion Air",
+    "telephony": "LION INTER"
+  },
+  "LNK": {
+    "name": "Airlink",
+    "telephony": "LINK"
+  },
+  "LOG": {
+    "name": "Loganair",
+    "telephony": "LOGAN"
+  },
+  "LOT": {
+    "name": "LOT Polish Airlines",
+    "telephony": "POLLOT"
+  },
+  "MAS": {
+    "name": "Malaysia Airlines",
+    "telephony": "MALAYSIAN"
+  },
+  "MAU": {
+    "name": "Air Mauritius",
+    "telephony": "AIRMAURITIUS"
+  },
+  "MEA": {
+    "name": "Middle East Airlines",
+    "telephony": "CEDAR JET"
+  },
+  "MSR": {
+    "name": "EgyptAir",
+    "telephony": "EGYPTAIR"
+  },
+  "NAX": {
+    "name": "Norwegian",
+    "telephony": "NOR SHUTTLE"
+  },
+  "NCA": {
+    "name": "Nippon Cargo Airlines",
+    "telephony": "NIPPON CARGO"
+  },
+  "NCR": {
+    "name": "National Airlines",
+    "telephony": "NATIONAL CARGO"
+  },
+  "NJE": {
+    "name": "NetJets Europe",
+    "telephony": "FRACTION"
+  },
+  "NJS": {
+    "name": "National Jet Systems",
+    "telephony": "NATIONAL JET"
+  },
+  "NKS": {
+    "name": "Spirit Airlines",
+    "telephony": "SPIRIT WINGS"
+  },
+  "NLY": {
+    "name": "National Jet Express",
+    "telephony": "NATIONAL JET"
+  },
+  "NWK": {
+    "name": "Network Aviation",
+    "telephony": "NETLINK"
+  },
+  "NZM": {
+    "name": "Air New Zealand Link",
+    "telephony": "MOUNT COOK"
+  },
+  "OMA": {
+    "name": "Oman Air",
+    "telephony": "OMAN AIR"
+  },
+  "PAC": {
+    "name": "Polar Air Cargo",
+    "telephony": "POLAR"
+  },
+  "PAL": {
+    "name": "Philippine Airlines",
+    "telephony": "PHILIPPINE"
+  },
+  "PGT": {
+    "name": "Pegasus Airlines",
+    "telephony": "SUNTURK"
+  },
+  "PIA": {
+    "name": "Pakistan International Airlines",
+    "telephony": "PAKISTAN"
+  },
+  "PIC": {
+    "name": "Pacific Airlines",
+    "telephony": "PACIFIC AIRLINES"
+  },
+  "POE": {
+    "name": "Porter Airlines",
+    "telephony": "PORTER"
+  },
+  "QFA": {
+    "name": "Qantas",
+    "telephony": "QANTAS"
+  },
+  "QLK": {
+    "name": "QantasLink",
+    "telephony": "QLINK"
+  },
+  "QNZ": {
+    "name": "QantasLink",
+    "telephony": "Q-LINK"
+  },
+  "QTR": {
+    "name": "Qatar Airways",
+    "telephony": "QATARI"
+  },
+  "RAM": {
+    "name": "Royal Air Maroc",
+    "telephony": "ROYALAIR MAROC"
+  },
+  "RBA": {
+    "name": "Royal Brunei Airlines",
+    "telephony": "BRUNEI"
+  },
+  "RCA": {
+    "name": "Royal Flying Doctor Service",
+    "telephony": "MEDIC"
+  },
+  "RCH": {
+    "name": "US Air Mobility Command",
+    "telephony": "REACH"
+  },
+  "RFD": {
+    "name": "Royal Flying Doctor Service",
+    "telephony": "FLYDOC"
+  },
+  "RJA": {
+    "name": "Royal Jordanian",
+    "telephony": "JORDANIAN"
+  },
+  "RON": {
+    "name": "Nauru Airlines",
+    "telephony": "AIR NAURU"
+  },
+  "RRR": {
+    "name": "Royal Air Force",
+    "telephony": "ASCOT"
+  },
+  "RWD": {
+    "name": "RwandAir",
+    "telephony": "RWANDAIR"
+  },
+  "RXA": {
+    "name": "Regional Express",
+    "telephony": "REX"
+  },
+  "RYR": {
+    "name": "Ryanair",
+    "telephony": "RYANAIR"
+  },
+  "SAA": {
+    "name": "South African Airways",
+    "telephony": "SPRINGBOK"
+  },
+  "SAS": {
+    "name": "SAS",
+    "telephony": "SCANDINAVIAN"
+  },
+  "SEJ": {
+    "name": "SpiceJet",
+    "telephony": "SPICEJET"
+  },
+  "SFJ": {
+    "name": "StarFlyer",
+    "telephony": "STARFLYER"
+  },
+  "SFR": {
+    "name": "FlySafair",
+    "telephony": "SAFAIR"
+  },
+  "SHA": {
+    "name": "Sharp Airlines",
+    "telephony": "SHARP"
+  },
+  "SIA": {
+    "name": "Singapore Airlines",
+    "telephony": "SINGAPORE"
+  },
+  "SJX": {
+    "name": "Starlux Airlines",
+    "telephony": "STARWALKER"
+  },
+  "SKP": {
+    "name": "Skytrans Airlines",
+    "telephony": "SKYTRANS"
+  },
+  "SKW": {
+    "name": "SkyWest Airlines",
+    "telephony": "SKYWEST"
+  },
+  "SKY": {
+    "name": "Skymark Airlines",
+    "telephony": "SKYMARK"
+  },
+  "SNJ": {
+    "name": "Solaseed Air",
+    "telephony": "NEWSKY"
+  },
+  "SOL": {
+    "name": "Solomon Airlines",
+    "telephony": "SOLOMON"
+  },
+  "SSQ": {
+    "name": "Sunstate Airlines",
+    "telephony": "SUNSTATE"
+  },
+  "SVA": {
+    "name": "Saudia",
+    "telephony": "SAUDIA"
+  },
+  "SWA": {
+    "name": "Southwest Airlines",
+    "telephony": "SOUTHWEST"
+  },
+  "SWR": {
+    "name": "Swiss",
+    "telephony": "SWISS"
+  },
+  "TAM": {
+    "name": "LATAM Airlines Brasil",
+    "telephony": "TAM"
+  },
+  "TAP": {
+    "name": "TAP Air Portugal",
+    "telephony": "AIR PORTUGAL"
+  },
+  "TAR": {
+    "name": "Tunisair",
+    "telephony": "TUNAIR"
+  },
+  "TAX": {
+    "name": "Thai AirAsia X",
+    "telephony": "EXPRESS WING"
+  },
+  "TFX": {
+    "name": "Toll Aviation",
+    "telephony": "TOLL EXPRESS"
+  },
+  "TGW": {
+    "name": "Scoot",
+    "telephony": "SCOOTER"
+  },
+  "THA": {
+    "name": "Thai Airways",
+    "telephony": "THAI"
+  },
+  "THT": {
+    "name": "Air Tahiti Nui",
+    "telephony": "TAHITI AIRLINES"
+  },
+  "THY": {
+    "name": "Turkish Airlines",
+    "telephony": "TURKISH"
+  },
+  "TOK": {
+    "name": "PNG Air",
+    "telephony": "BALUS"
+  },
+  "TOM": {
+    "name": "TUI Airways",
+    "telephony": "TOMJET"
+  },
+  "TRA": {
+    "name": "Transavia",
+    "telephony": "TRANSAVIA"
+  },
+  "TSC": {
+    "name": "Air Transat",
+    "telephony": "TRANSAT"
+  },
+  "TWB": {
+    "name": "T'way Air",
+    "telephony": "TWAYAIR"
+  },
+  "TZP": {
+    "name": "Zipair Tokyo",
+    "telephony": "ZIPPY"
+  },
+  "UAE": {
+    "name": "Emirates",
+    "telephony": "EMIRATES"
+  },
+  "UAL": {
+    "name": "United Airlines",
+    "telephony": "UNITED"
+  },
+  "UPS": {
+    "name": "UPS",
+    "telephony": "UPS"
+  },
+  "UTY": {
+    "name": "Alliance Airlines",
+    "telephony": "UNITY"
+  },
+  "UZB": {
+    "name": "Uzbekistan Airways",
+    "telephony": "UZBEK"
+  },
+  "VAU": {
+    "name": "Virgin Australia International",
+    "telephony": "VELVET"
+  },
+  "VIR": {
+    "name": "Virgin Atlantic",
+    "telephony": "VIRGIN"
+  },
+  "VJC": {
+    "name": "VietJet Air",
+    "telephony": "VIETJETAIR"
+  },
+  "VLG": {
+    "name": "Vueling",
+    "telephony": "VUELING"
+  },
+  "VOZ": {
+    "name": "Virgin Australia",
+    "telephony": "VIRGIN"
+  },
+  "WJA": {
+    "name": "WestJet",
+    "telephony": "WESTJET"
+  },
+  "WZZ": {
+    "name": "Wizz Air",
+    "telephony": "WIZZ AIR"
+  },
+  "XAX": {
+    "name": "AirAsia X",
+    "telephony": "XANADU"
+  }
+}

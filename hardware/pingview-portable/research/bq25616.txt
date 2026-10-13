@@ -1,0 +1,2425 @@
+                                                                                                                  BQ25616, BQ25616J
+                                                                                      SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+    BQ25616/616J Standalone 1-Cell 3.0-A Buck Battery Charger with Power Path and
+                               1.2-A Boost Operation
+
+1 Features                                                             3 Description
+•   High-efficiency, 1.5-MHz, synchronous switch-                      The BQ25616/616J is a highly integrated 3-A switch-
+    mode buck charger                                                  mode battery charge management and system
+    – 92% charge efficiency at 2 A from 5-V input                      power path management device for single cell Li-
+    – ±0.5% charge voltage regulation                                  Ion and Li-polymer batteries. The solution is highly
+    – Adjustable charge voltage from VSET pin                          integrated with input reverse-blocking FET (RBFET,
+       supports 4.1 V, 4.2 V, and 4.35 V with ±0.4%                    Q1), high-side switching FET (HSFET, Q2), low-
+       regulation accuracy                                             side switching FET (LSFET, Q3), and battery FET
+    – ±6% charge current regulation                                    (BATFET, Q4) between system and battery. The
+    – ±7.5% input current regulation                                   low impedance power path optimizes switch-mode
+    – Supports JEITA (BQ25616J) or Hot/Cold                            operation efficiency, reduces battery charging time
+       (BQ25616) temperature sensing profile                           and extends battery run time during discharging
+    – 10-hr charging safety timer                                      phase.
+•   Support USB On-The-Go (OTG)                                        The BQ25616/616J is a highly integrated 3-A switch-
+    – 5-V boost converter with up to 1.2-A output                      mode battery charge management and system Power
+    – 92% boost efficiency at 1-A output                               Path management device for Li-ion and Li-polymer
+    – Accurate constant current (CC) limit                             batteries. It features fast charging with high input
+    – Soft-start up to 500-µF capacitive load                          voltage support for a wide range of applications
+    – PFM mode for light load operation                                including speakers, industrial, and medical portable
+•   Single input supporting USB input, high-voltage                    devices. Its low impedance power path optimizes
+    adapter, or wireless power                                         switch-mode operation efficiency, reduces battery
+    – Support 4-V to 13.5-V input voltage range with                   charging time, and extends battery run time during
+       22-V absolute max input rating                                  discharging phase. Its input voltage and current
+    – 130-ns fast turn-off input overvoltage protection                regulation deliver maximum charging power to the
+       with optional external OVPFET standing input                    battery.
+       voltage up to 30 V
+    – Programmable input current limit (IINDPM) with                                        Device Information
+       ILIM pin                                                              PART NUMBER           PACKAGE(1)         BODY SIZE (NOM)
+    – VINDPM threshold automatically tracks battery                    BQ25616/616J           WQFN (24)               4.00 mm × 4.00 mm
+       voltage for maximum power
+                                                                       (1)    For all available packages, see the orderable addendum at
+    – Auto detect USB SDP, CDP, DCP and                                       the end of the data sheet.
+       nonstandard adaptors
+•   Narrow VDC (NVDC) power path management
+                                                                                            VAC                             SYS 3.5V ± 4.35V
+    – System instant-on with no battery or deeply                                                      SW
+       discharged battery                                            USB                    VBUS
+•   Low RDSON 19.5-mΩ BATFET to minimize                                                    ACDRV
+                                                                                                     BTST
+
+    charging loss and extend battery run time                                                         SYS
+•   9.5-µA low battery leakage current with system                                          ILIM
+                                                                                                      BAT          ICHG
+                                                                                                                          REGN
+    standby                                                                                 ICHG                  +
+•   High integration includes all MOSFETs, current
+                                                                                            CE
+    sensing and loop compensation
+•   Safety Related Certifications:                                                          VSET        TS
+
+    – IEC 62368-1 CB Certification
+2 Applications
+•   Electronic Point of Sale (EPOS)
+•   Wireless speaker                                                                      Simplified Application
+•   Industrial, medical, portable electronics
+
+
+     An IMPORTANT NOTICE at the end of this data sheet addresses availability, warranty, changes, use in safety-critical applications,
+     intellectual property matters and other important disclaimers. PRODUCTION DATA.
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                                                  www.ti.com
+
+
+                                                                        Table of Contents
+1 Features............................................................................1     9.4 Device Functional Modes..........................................28
+2 Applications..................................................................... 1     10 Application and Implementation................................ 29
+3 Description.......................................................................1       10.1 Application Information........................................... 29
+4 Revision History.............................................................. 2          10.2 Typical Applications................................................ 29
+5 Description (continued).................................................. 3             11 Power Supply Recommendations..............................37
+6 Device Comparison Table...............................................4                 12 Layout...........................................................................38
+7 Pin Configuration and Functions...................................5                       12.1 Layout Guidelines................................................... 38
+8 Specifications.................................................................. 7        12.2 Layout Example...................................................... 38
+  8.1 Absolute Maximum Ratings........................................ 7                  13 Device and Documentation Support..........................40
+  8.2 ESD Ratings............................................................... 7          13.1 Device Support....................................................... 40
+  8.3 Recommended Operating Conditions.........................7                            13.2 Documentation Support.......................................... 40
+  8.4 Thermal Information....................................................7              13.3 Receiving Notification of Documentation Updates..40
+  8.5 Electrical Characteristics.............................................8              13.4 Support Resources................................................. 40
+  8.6 Timing Requirements................................................ 12                13.5 Trademarks............................................................. 40
+  8.7 Typical Characteristics.............................................. 14              13.6 Electrostatic Discharge Caution..............................40
+9 Detailed Description......................................................16              13.7 Glossary..................................................................40
+  9.1 Overview................................................................... 16      14 Mechanical, Packaging, and Orderable
+  9.2 Functional Block Diagram......................................... 16                  Information.................................................................... 41
+  9.3 Feature Description...................................................17
+
+
+
+4 Revision History
+NOTE: Page numbers for previous revisions may differ from page numbers in the current version.
+
+Changes from Revision * (January 2020) to Revision A (February 2022)                                                                                  Page
+• Changed 20-hr charging safety timer to 10-hr charging safety timer in Features...............................................1
+• Added Safety Related Certifications: IEC 62368-1 CB Certification...................................................................1
+• Changed charge safety timer accuracy from 20 hr to 10 hr for BQ25616/J in the Device Comparison Table....4
+• Deleted deglitch time and added charge voltage limit in the Device Comparison Table.................................... 4
+• Changes TS and VAC pin descriptions in Table 7-1 .......................................................................................... 5
+• Changed voltage, BAT, SYS (converter not switching) MAX value from 17 V to 7 V in Section 8.1 ..................7
+• Added CHARGE OVERCURRENT COMPARATOR (CYCLE-BY-CYCLE) in Section 8.5 ................................ 8
+• Deleted VBST_BAT and added VBATLOWV_OTG in Section 8.5 ...............................................................................8
+• Deleted numerous test conditions in D+/D- Detection section in Section 8.5 ....................................................8
+• Deleted IBST_OCP_Q1 in Section 8.5 .................................................................................................................... 8
+• Deleted accuracy from tTOP_OFF and CHG_TIMER = 20hr from tSAFETY in Section 8.6 .................................. 12
+• Changed tSAFETY MIN/TYP/MAX values in Section 8.6 ................................................................................... 12
+• Deleted VBATREG = 4.4 V curve from Figure 8-3 .............................................................................................. 14
+• Changed safety timer from 20 hours to 10 hours in Table 9-4 .........................................................................23
+• Changed T2 from 20 to 10 in Figure 9-6 ..........................................................................................................24
+• Changed Section 9.3.9.5.3 .............................................................................................................................. 28
+
+
+
+
+2       Submit Document Feedback                                                                                           Copyright © 2022 Texas Instruments Incorporated
+
+                                                              Product Folder Links: BQ25616 BQ25616J
+                                                                                                             BQ25616, BQ25616J
+www.ti.com                                                                          SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+5 Description (continued)
+The solution is highly integrated with input reverse-blocking FET (RBFET, Q1), high-side switching FET (HSFET,
+Q2), low-side switching FET (LSFET, Q3), and battery FET (BATFET, Q4) between system and battery. It also
+integrates the bootstrap diode for the high-side gate drive for simplified system design. The hardware setting and
+status report provides easy configuration to set up the charging solution.
+The device supports a wide range of input sources, including standard USB host port, USB charging port, USB
+compliant high voltage adapter and wireless power. It is compliant with USB 2.0 and USB 3.0 power spec
+with input current and voltage regulation. The device sets default input current limit based on the built-in USB
+detection through D+/D- pins . When the device built-in USB interface identifies the input adaptor is unknown,
+the device's input current limit is determined by the ILIM pin setting resistor value.
+The device integrates the buck charger and boost regulator into one solution with single inductor. It meets USB
+On-The-Go (OTG) operation power rating specification by supplying 5V with constant current limit up to 1.2-A.
+The Power Path management regulates the system slightly above battery voltage but does not drop below
+3.5-V minimum system voltage with adapter applied. With this feature, the system maintains operation even
+when the battery is completely depleted or removed. When the input current limit or voltage limit is reached, the
+Power Path management automatically reduces the charge current. As the system load continues to increase,
+the battery starts to discharge the battery until the system power requirement is met. This supplement mode
+prevents overloading the input source.
+The device initiates and completes a charging cycle without software control. It senses the battery voltage and
+charges the battery in three phases: pre-conditioning, constant current and constant voltage. At the end of
+the charging cycle, the charger automatically terminates when the charge current is below a preset limit and
+the battery voltage is higher than the recharge threshold. If the fully charged battery falls below the recharge
+threshold, the charger automatically starts another charging cycle.
+The charger provides various safety features for battery charging and system operations, including battery
+negative temperature coefficient thermistor monitoring, charging safety timer and overvoltage and over-current
+protections. Thermal regulation reduces charge current when the junction temperature exceeds 110°C. The
+STAT output reports the charging status and any fault conditions.
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                      Submit Document Feedback         3
+                                                  Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                         www.ti.com
+
+
+6 Device Comparison Table
+                                            BQ25606                    BQ25616                         BQ25616J
+    Quiescent battery current (BAT,           58 µA                     9.5 µA                           9.5 µA
+              SYS, SW)
+       VBUS OVP Reaction-time                200 ns                     130 ns                           130 ns
+    Input voltage regulation accuracy         ±3%                        ±2%                              ±2%
+               TS profile                     JEITA                    Hot/Cold                           JEITA
+     Charge safety timer accuracy             10 hr                      10 hr                            10 hr
+          Charge voltage limit          4.2 V/4.35 V/4.4 V         4.1 V/4.2 V/4.35 V              4.1 V/4.2 V/4.35 V
+       Battery voltage regulation            ±0.5%                      ±0.4%                            ±0.4%
+                ACDRV                          No                         Yes                              Yes
+
+
+
+
+4       Submit Document Feedback                                                        Copyright © 2022 Texas Instruments Incorporated
+
+                                              Product Folder Links: BQ25616 BQ25616J
+                                                                                                                                       BQ25616, BQ25616J
+www.ti.com                                                                                                  SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+7 Pin Configuration and Functions
+
+                                                                  VBUS   PMID   REGN     BTST   SW   SW
+
+
+
+
+                                                                  24     23     22       21     20   19
+
+                                            VAC             1                                               18          GND
+
+                                         ACDRV              2                                               17          GND
+
+                                              D+            3                                               16          SYS
+                                                                                Thermal
+                                              D±            4                      Pad                      15          SYS
+
+                                           STAT             5                                               14          BAT
+
+                                            OTG             6                                               13          BAT
+
+                                                                  7      8      9        10     11   12
+
+
+
+
+                                                                                         ICHG
+                                                                  PG
+                                                                                                     VSET
+                                                                         ILIM
+                                                                                CE              TS
+                                                                                                                 Not to scale
+
+                                         Figure 7-1. RTW Package 24-Pin WQFN Top View
+
+                                                                Table 7-1. Pin Functions
+            PIN
+                                 TYPE(1)                                                              DESCRIPTION
+    NAME           NO.
+                                                  Charge pump output to drive external N-channel MOSFET (ACFET). It provides 6V voltage
+ ACDRV              2              AO             above VBUS as gate drive to turn on ACFET when VAC voltage is below ACOV threshold
+                                                  (14.2-V) and above UVLO. Leave ACDRV floating if external OVP is not being used.
+                    13                            Battery connection point to the positive terminal of the battery pack. The internal current sensing
+ BAT                                P
+                    14                            resistor is connected between SYS and BAT. Connect a 10 µF(2) closely to the BAT pin.
+
+                                                  PWM high side driver positive supply. Internally, the BTST is connected to the cathode of the
+ BTST               21              P
+                                                  boot-strap diode. Connect the 0.047-μF bootstrap capacitor(2) from SW to BTST.
+ CE                 9               DI            Charge enable pin. When this pin is driven LOW, battery charging is enabled.
+                                                  Positive line of the USB data line pair. D+/D– based USB host/charging port detection. The
+ D+                 3              AIO            detection includes data contact detection (DCD), primary and secondary detection in BC1.2 and
+                                                  nonstandard adaptors
+                                                  Negative line of the USB data line pair. D+/D– based USB host/charging port detection. The
+ D–                 4              AIO            detection includes data contact detection (DCD), primary and secondary detection in BC1.2 and
+                                                  nonstandard adaptors
+                    17
+ GND                                P             Power ground and signal ground
+                    18
+                                                  ICHG pin sets the charge current limit. A resistor is connected from ICHG pin to ground to set
+ ICHG               10              AI            charge current limit as ICHG = KICHG/RICHG. The acceptable range for charge current is 300 mA
+                                                  – 3000 mA.
+                                                  ILIM sets the input current limit when the input adapter is detected as unknown. Otherwise, the
+                                                  input current limit is set by D+/D– detection outcome. A resistor is connected from ILIM pin to
+ ILIM               8               AI
+                                                  ground to set the input current limit as IINDPM = KILIM/RILIM. The acceptable range for ILIM
+                                                  current is 500 mA - 3200 mA.
+                                                  Boost mode enable pin. When this pin is pulled HIGH, boost mode is enabled. OTG pin cannot
+ OTG                6               DI
+                                                  be floating.
+                                                  Open drain active low power good indicator. Connect to the pull up rail through 10 kΩ resistor.
+ PG                 7              DO             LOW indicates a good input if the input voltage is between UVLO and ACOV, above SLEEP
+                                                  mode threshold, and input current limit is above 30 mA.
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                                                 Submit Document Feedback      5
+                                                       Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                        www.ti.com
+
+                                                  Table 7-1. Pin Functions (continued)
+              PIN
+                                  TYPE(1)                                               DESCRIPTION
+      NAME           NO.
+                                               Connected to the drain of the reverse blocking MOSFET (RBFET) and the drain of HSFET. Place
+    PMID             23              P
+                                               a 10-µF capacitor(2) on PMID to GND.
+                                               PWM low side driver positive supply output. Internally, REGN is connected to the anode of
+    REGN             22              P         the boot-strap diode. Connect a 4.7-μF (10-V rating) ceramic capacitor(2) from REGN to analog
+                                               GND. The capacitor should be placed close to the IC.
+                                               Open-drain interrupt output. Connect the STAT pin to a logic rail via 10-kΩ resistor. The STAT pin
+                                               indicates charger status.
+    STAT              5             DO         Charge in progress: LOW
+                                               Charge complete or charger in SLEEP mode: HIGH
+                                               Charge suspend (fault response): Blink at 1Hz
+                     19                        Switching node connecting to output inductor. Internally SW is connected to the source of
+    SW                               P         the n-channel HSFET and the drain of the n-channel LSFET. Connect the 0.047-μF bootstrap
+                     20                        capacitor from SW to BTST.
+                     15                        System output connection point. The internal current sensing resistor is connected between SYS
+    SYS                              P
+                     16                        and BAT. Connect a 10 µF (min) capacitor(2) close to the SYS pin.
+
+                                               Battery temperature qualification voltage input. Connect a negative temperature coefficient
+                                               thermistor (NTC). Program temperature window with a resistor divider from REGN to TS to
+                                               GND. Charge and boost mode suspend when TS pin voltage is out of range. When TS pin is
+    TS                11             AI
+                                               not used, connect a 10-kΩ resistor from REGN to TS and a 10-kΩ resistor from TS to GND. It
+                                               is recommended to use a 103AT-2 thermistor. BQ25616 supports hot/cold profile and BQ25616J
+                                               supports JEITA profile.
+                                               Charger input voltage sensing. Optional external n-channel ACFET is placed between VAC and
+                                               VBUS. When VAC voltage is below ACOV threshold (14.2-V) and above UVLO, ACFET turns on
+    VAC               1              P
+                                               to connect VAC to VBUS, and power up the charger IC. Connect VAC and VBUS if ACFET is not
+                                               to be used.
+                                               Charger input voltage. The internal n-channel reverse block MOSFET (RBFET) is connected
+    VBUS             24              P         between VBUS and PMID with VBUS on source. Place a 1-uF ceramic capacitor(2) from VBUS
+                                               to GND and place it as close as possible to the device.
+                                               VSET pin sets default battery charge voltage . Program battery regulation voltage with a resistor
+                                               pull-down from VSET to GND.
+    VSET             12              AI        RVSET > 50kΩ (float pin) = 4.208 V
+                                               RVSET < 500Ω (short to GND) = 4.352 V
+                                               5kΩ < RVSET < 25kΩ = 4.100 V
+                                               Ground reference for the device that is also the thermal pad used to conduct heat from the
+    Thermal                                    device. This connection serves two purposes. The first purpose is to provide an electrical ground
+                      —              P
+    Pad                                        connection for the device. The second purpose is to provide a low thermal-impedance path from
+                                               the device die to the PCB. This pad should be tied externally to a ground plane.
+
+(1)       AI = Analog input, AO = Analog Output, AIO = Analog input Output, DI = Digital input, DO = Digital Output, DIO = Digital input Output,
+          P = Power
+(2)       All capacitors are ceramic unless otherwise specified
+
+
+
+
+6          Submit Document Feedback                                                                     Copyright © 2022 Texas Instruments Incorporated
+
+                                                     Product Folder Links: BQ25616 BQ25616J
+                                                                                                                      BQ25616, BQ25616J
+www.ti.com                                                                              SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+8 Specifications
+8.1 Absolute Maximum Ratings
+over operating free-air temperature range (unless otherwise noted)(1)
+                                                                                                               MIN         MAX       UNIT
+ Voltage                           VAC (converter not switching)                                                –2           30        V
+ Voltage                           VBUS (converter not switching)                                                -2          22        V
+ Voltage                           PMID (converter not switching)                                              –0.3          22        V
+ Voltage                           SW                                                                          –0.3          16        V
+ Voltage                           BAT, SYS (converter not switching)                                          –0.3              7     V
+ Voltage                           BTST                                                                        –0.3          22        V
+ Voltage                           ACDRV                                                                       –0.3          40        V
+ Voltage                           D+. D-, STAT, OTG, PG, ILIM, CE, ICHG, TS, VSET                             –0.3              7     V
+ Output Sink Current               STAT, PG                                                                                      6    mA
+ TJ                                Junction temperature                                                        –40          150       °C
+ Tstg                              Storage temperature                                                         –55          150       °C
+
+(1)      Stresses beyond those listed under Absolute Maximum Rating may cause permanent damage to the device. These are stress
+         ratings only, which do not imply functional operation of the device at these or any other conditions beyond those indicated
+         under Recommended Operating Condition. Exposure to absolute-maximum-rated conditions for extended periods may affect device
+         reliability.
+
+
+8.2 ESD Ratings
+                                                                                                                        VALUE         UNIT
+                                        Human body model (HBM), per ANSI/ESDA/JEDEC JS-001, all pins(1)                  ±2000
+ V(ESD) Electrostatic discharge                                                                                                        V
+                                        Charged device model (CDM), per JEDEC specification JESD22-C101, all pins(2)     ±250
+
+(1)      JEDEC document JEP155 states that 500-V HBM allows safe manufacturing with a standard ESD control process.
+(2)      JEDEC document JEP157 states that 250-V CDM allows safe manufacturing with a standard ESD control process.
+
+
+8.3 Recommended Operating Conditions
+over operating free-air temperature range (unless otherwise noted)
+                                                                                                  MIN       NOM          MAX         UNIT
+ VVBUS         Input voltage                                                                          4                   13.5        V
+ VBAT          Battery voltage                                                                                            4.35        V
+ IVBUS         Input current                                                                                               3.2        A
+ ISW           Output current (SW)                                                                                         3.2        A
+               Fast charging current                                                                                        3         A
+ IBAT
+               RMS discharge current                                                                                        6         A
+ TA            Ambient temperature                                                                  –40                    85         °C
+
+
+
+8.4 Thermal Information
+                                                                                   BQ25616/BQ25616J
+                               THERMAL METRIC(1)                                       RTW (WQFN)                        UNIT
+                                                                                          24 Pins
+ RθJA             Junction-to-ambient thermal resistance (JEDEC(1))                        31.9                          °C/W
+ RθJC(top)        Junction-to-case (top) thermal resistance                                 27                           °C/W
+ RθJB             Junction-to-board thermal resistance                                      9.2                          °C/W
+ ΨJT              Junction-to-top characterization parameter                                0.4                          °C/W
+ ΨJB              Junction-to-board characterization parameter                              9.2                          °C/W
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                           Submit Document Feedback           7
+                                                   Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                           www.ti.com
+
+8.4 Thermal Information (continued)
+                                                                                         BQ25616/BQ25616J
+                                 THERMAL METRIC(1)                                          RTW (WQFN)                             UNIT
+                                                                                               24 Pins
+    RθJC(bot)        Junction-to-case (bottom) thermal resistance                                 2.8                              °C/W
+
+(1)         For more information about traditional and new thermal metrics, see the Semiconductor and IC Package Thermal Metrics application
+            report.
+
+
+8.5 Electrical Characteristics
+VVBUS_UVLOZ < VVBUS < VVBUS_OV and VVBUS > VBAT + VSLEEP, TJ = -40°C to +125°C, and TJ = 25°C for typical values (unless
+otherwise noted)
+                            PARAMETER                                        TEST CONDITIONS                     MIN        TYP       MAX      UNIT
+    QUIESCENT CURRENTS
+                                                                    VBAT = 4.5V, VBUS floating or VBUS
+                          Quiescent battery current (BAT, SYS,
+    IQ_BAT                                                          = 0V - 5V, SCL, SDA = 0V or 1.8V, TJ                     9.5         15     µA
+                          SW)
+                                                                    < 85 °C, BATFET on.
+                          Input current (VBUS) in buck mode         VBUS=5V, charge disabled, converter
+    IVBUS                                                                                                                    2.3                mA
+                          when converter is switching               switching, ISYS = 0A
+                          Quiescent battery current (BAT, SYS,      VBAT = 4.5V, VBUS = 4.9V, boost
+    IBST                  SW) in boost mode when converter is       mode enabled, converter switching,                       2.4                mA
+                          switching                                 IVBUS = 0A
+    VBUS / VBAT SUPPLY
+    VVBUS_OP              VBUS operating range                                                                      4                  13.5      V
+                          VAC rising for ACFET turnon, no
+    VVAC_UVLOZ                                                      VAC rising                                              3.55       3.85      V
+                          battery
+                          VAC falling for ACFET turnoff, no
+    VVAC_UVLO                                                       VAC falling                                             3.25       3.55      V
+                          battery
+                          External ACFET gate drive voltage
+    VACDRV                                                                                                                    10                 V
+                          with minimum 8nF CGS
+    VVBUS_UVLOZ           VBUS rising for active bias, no battery VBUS rising                                                3.3        3.7      V
+    VVBUS_UVLO            VBUS falling to turnoff bias, no battery VBUS falling                                                3        3.3      V
+    VVBUS_PRESENT         VBUS to enable REGN                       VBUS rising                                             3.65        3.9      V
+    VVBUS_PRESENTZ        VBUS to disable REGN                      VBUS falling                                            3.15        3.4      V
+                                                                    VBUS falling, VBUS - VBAT, VBAT =
+    VSLEEP                Enter Sleep mode threshold                                                               15         60       110      mV
+                                                                    4V
+                                                                    VBUS rising, VBUS - VBAT, VBAT =
+    VSLEEPZ               Exit Sleep mode threshold                                                               115       220        340      mV
+                                                                    4V
+                          VAC overvoltage rising threshold to
+                                                                    VAC rising                                   13.5       14.2     14.85       V
+                          turnoff ACFET and switching
+    VACOV
+                          VAC overvoltage falling threshold to
+                                                                    VAC falling,                                   13       13.9       14.5      V
+                          turnon ACFET and switching
+    VBAT_UVLOZ            BAT voltage for active bias, no VBUS      VBAT rising                                   2.5                            V
+                          BAT depletion rising threshold to turn
+    VBAT_DPLZ                                                       VBAT rising                                  2.35                   2.8      V
+                          on BATFET
+                          BAT depletion falling threshold to turn
+    VBAT_DPL                                                        VBAT falling                                 2.18                  2.62      V
+                          off BATFET
+    VPOORSRC              Bad adapter detection threshold           VBUS falling                                 3.75        3.9        4.0      V
+    POWER PATH MANAGEMENT
+                          Typical minimum system regulation         VBAT=3.2V < SYS_MIN = 3.5V, ISYS
+    VSYS_MIN                                                                                                      3.5       3.65                 V
+                          voltage                                   = 0A
+                                                                    VREG = 4.35V, Charge disabled, ISYS
+    VSYS_OVP              System overvoltage threshold                                                                       4.7                 V
+                                                                    = 0A
+    RON_RBFET             Blocking FET on-resistance                                                                          45               mΩ
+
+8           Submit Document Feedback                                                                       Copyright © 2022 Texas Instruments Incorporated
+
+                                                       Product Folder Links: BQ25616 BQ25616J
+                                                                                                                   BQ25616, BQ25616J
+www.ti.com                                                                                SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+8.5 Electrical Characteristics (continued)
+VVBUS_UVLOZ < VVBUS < VVBUS_OV and VVBUS > VBAT + VSLEEP, TJ = -40°C to +125°C, and TJ = 25°C for typical values (unless
+otherwise noted)
+                         PARAMETER                                        TEST CONDITIONS                 MIN     TYP     MAX     UNIT
+ RON_HSFET             High-side switching FET on-resistance                                                        62            mΩ
+ RON_LSFET             Low-side switching FET on-resistance                                                         71            mΩ
+                       BATFET forward voltage in                 BAT discharge current 10mA,
+ VBATFET_FWD                                                                                                        30            mV
+                       supplement mode                           converter running
+ BATTERY CHARGER
+                                                                 VREG = 4.1V, RVSET=10kΩ, TJ = 0°C -
+                                                                                                        4.0836     4.1   4.1164    V
+                                                                 85°C
+                                                                 VREG = 4.2V, RVSET>50kΩ, TJ = 0°C -
+ VREG_ACC              Charge voltage accuracy                                                          4.1832     4.2   4.2168    V
+                                                                 85°C
+                                                                 VREG = 4.35V, RVSET<500Ω, TJ = 0°C
+                                                                                                        4.3326    4.35   4.3674    V
+                                                                 - 85°C
+                       Typical charge current regulation
+ ICHG_RANGE                                                                                                 0                3     A
+                       range
+                                                                 ICHG=KICHG/RICHG, VBAT = 3.1V, TJ =
+                                                                                                          639     677      715    AxΩ
+                                                                 –40°C - 85°C
+ KICHG                 ICHG pin setting ratio
+                                                                 ICHG=KICHG/RICHG, VBAT = 3.8V, TJ =
+                                                                                                          639     677      715    AxΩ
+                                                                 –40°C - 85°C
+                                                                 RICHG = 1100 Ω, VBAT = 3.1V or 3.8V,
+                                                                                                         0.516   0.615    0.715    A
+                                                                 TJ = –40°C - 85°C
+                       Fast charge current regulation            RICHG = 562 Ω, VBAT = 3.1V or 3.8V,
+ ICHG_ACC                                                                                                 1.14   1.205     1.28    A
+                       accuracy                                  TJ = –40°C - 85°C
+                                                                 RICHG = 372 Ω, VBAT = 3.1V or 3.8V,
+                                                                                                         1.715    1.82     1.89    A
+                                                                 TJ = –40°C - 85°C
+ IPRECHG_RATIO         Precharge current accuracy                As percentage of ICHG, VBAT = 2.6V                  5             %
+                                                                 RICHG = 1100 Ω, VBAT = 2.6V, TJ =
+                                                                                                           21       30      38    mA
+                                                                 –40°C - 85°C
+                                                                 RICHG = 562 Ω, VBAT = 2.6V, TJ = –
+ IPRECHG_ACC           Precharge current accuracy                                                          48       60      67    mA
+                                                                 40°C - 85°C
+                                                                 RICHG = 372 Ω, VBAT = 2.6V, TJ = –
+                                                                                                           76       90      97    mA
+                                                                 40°C - 85°C
+                                                                 As percentage of ICHG, VBAT =
+ ITERM_RATIO           Termination current accuracy                                                                  5             %
+                                                                 4.35V, (char, all codes)
+                                                                 RICHG = 1100 Ω, VBAT = 4.35V, TJ =
+                                                                                                            9       31      57    mA
+                                                                 0°C - 85°C
+                                                                 RICHG = 562 Ω, VBAT = 4.35V, TJ =
+ ITERM_ACC             Termination current accuracy                                                        36       60      85    mA
+                                                                 0°C - 85°C
+                                                                 RICHG = 372 Ω, VBAT = 4.35V, TJ =
+                                                                                                           56       91     126    mA
+                                                                 0°C - 85°C
+                       Battery short voltage rising threshold
+ VBAT_SHORTZ                                                     VBAT rising                              2.13    2.25     2.35    V
+                       to start pre-charge
+                       Battery short voltage falling threshold
+ VBAT_SHORT                                                      VBAT falling                             1.85       2     2.15    V
+                       to stop pre-charge
+ IBAT_SHORT            Battery short trickle charging current    VBAT < VBAT_SHORTZ                        70       90     110    mA
+                       Battery LOWV rising threshold to start
+                                                                 VBAT rising                                3     3.12     3.24    V
+                       fast-charge
+ VBATLOWV
+                       Battery LOWV falling threshold to stop
+                                                              VBAT falling                                 2.7     2.8      2.9    V
+                       fast-charge
+ VRECHG                Battery recharge threshold                VBAT falling                              90     100      150    mV
+                       System discharge load current during
+ ISYS_LOAD                                                                                                          30            mA
+                       SYSOVP
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                            Submit Document Feedback         9
+                                                    Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                    www.ti.com
+
+8.5 Electrical Characteristics (continued)
+VVBUS_UVLOZ < VVBUS < VVBUS_OV and VVBUS > VBAT + VSLEEP, TJ = -40°C to +125°C, and TJ = 25°C for typical values (unless
+otherwise noted)
+                       PARAMETER                                       TEST CONDITIONS                    MIN        TYP       MAX      UNIT
+                                                              TJ = -40°C - 85°C                                      19.5         26    mΩ
+ RON_BATFET          Battery FET on-resistance
+                                                              TJ = -40°C - 125°C                                     19.5         30    mΩ
+ BATTERY OVERVOLTAGE PROTECTION
+                     Battery overvoltage rising threshold     VBAT rising, as percentage of VREG           103       104        105      %
+ VBAT_OVP
+                     Battery overvoltage falling threshold    VBAT falling, as percentage of VREG          101       102        103      %
+ INPUT VOLTAGE / CURRENT REGULATION
+                     Typical input voltage regulation
+ VINDPM_ACC                                                                                              4.171        4.3     4.429       V
+                     accuracy
+                     VINDPM threshold to track battery
+ VINDPM_TRACK                                                 VBAT = 4.35V                                4.45       4.55       4.74      V
+                     voltage
+ IINDPM_ACC          Input current regulation accuracy        IINDPM = 500mA (TJ=-40°C - 85°C)             450       465        500      mA
+ IINDPM_ACC          Input current regulation accuracy        IINDPM = 900mA (TJ=-40°C-85°C)               750       835        900      mA
+ IINDPM_ACC          Input current regulation accuracy        IINDPM = 1500mA (TJ=-40°C-85°C)            1300       1390       1500      mA
+ KILIM               ILIM pin setting ratio                                                                459       478        500    AxΩ
+ D+ / D- DETECTION
+ VDP_SRC             D+ line source voltage                                                                500       600        700      mV
+                     D+ line data contact detect current
+ IDP_SRC                                                      VD+ = 200 mV                                   7         10         14     µA
+                     source
+ IDP_SINK            D+ line sink current                     VD+ = 500 mV                                  50       100        150      µA
+ VDP_DAT_REF         D+ line data detect voltage              D+ pin Rising                                250                  400      mV
+ VDP_LGC_LOW         D+ line logic low.                       D+ pin Rising                                                     800      mV
+ RDP_DWN             D+ line pull-down resistance             VD+ = 500 mV                               14.25                  24.8     kΩ
+ ID+_LKG             Leakage current into D+ line             Pull up to 1.8 V                              –1                     1     µA
+ VDM_SRC             D- line source voltage                                                                500       600        700      mV
+ IDM_SINK            D- line sink current                     VD- = 500 mV                                  50       100        150      µA
+ VDM_DAT_REF         D- line data detect voltage              D- pin Rising                                250                  400      mV
+ RDM_DWN             D- line pull-down resistance             VD- = 500 mV                               14.25                  24.8     kΩ
+ ID-_LKG             Leakage current into D- line             Pull up to 1.8 V                              –1                     1     µA
+                     D+ High comparator threshold for 2.8V
+ VD+ _2p8_hi                                               D+ pin rising                                  2.85          3        3.1      V
+                     detection
+                     D+ Low comparator threshold for 2.8V
+ VD+ _2p8_lo                                              D+ pin rising                                   2.35       2.45       2.55      V
+                     detection
+                     D+ comparator threshold for non-
+ VD+ _2p8                                                                                                 2.55                  2.85      V
+                     standard adapter
+                     D- High comparator threshold for 2.8V
+ VD- _2p8_hi                                               D- pin rising                                  2.85          3        3.1      V
+                     detection
+                     D- Low comparator threshold for 2.8V
+ VD- _2p8_lo                                                  D- pin rising                               2.35       2.45       2.55      V
+                     detection
+                     D- comparator threshold for non-
+ VD- _2p8                                                                                                 2.55                  2.85      V
+                     standard adapter
+                     D+ High comparator threshold for 2.0V
+ VD+ _2p0_hi                                               D+ pin rising                                  2.15       2.25       2.35      V
+                     detection
+                     D+ Low comparator threshold for 2.0V
+ VD+ _2p0_lo                                              D+ pin rising                                    1.6        1.7       1.85      V
+                     detection
+                     D+ comparator threshold for non-
+ VD+ _2p0                                                                                                 1.85                  2.15      V
+                     standard adapter
+                     D- High comparator threshold for 2.0V
+ VD- _2p0_hi                                               D- pin rising                                  2.15       2.25       2.35      V
+                     detection
+
+10       Submit Document Feedback                                                                   Copyright © 2022 Texas Instruments Incorporated
+
+                                                    Product Folder Links: BQ25616 BQ25616J
+                                                                                                                BQ25616, BQ25616J
+www.ti.com                                                                             SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+8.5 Electrical Characteristics (continued)
+VVBUS_UVLOZ < VVBUS < VVBUS_OV and VVBUS > VBAT + VSLEEP, TJ = -40°C to +125°C, and TJ = 25°C for typical values (unless
+otherwise noted)
+                         PARAMETER                                     TEST CONDITIONS                MIN      TYP     MAX     UNIT
+                       D- Low comparator threshold for 2.0V
+ VD- _2p0_lo                                                  D- pin rising                            1.6      1.7     1.85    V
+                       detection
+                       D- comparator threshold for non-
+ VD- _2p0                                                                                             1.85              2.15    V
+                       standard adapter
+                       D+ High comparator threshold for 1.2V
+ VD+ _1p2_hi                                                 D+ pin rising                            1.35      1.5      1.6    V
+                       detection
+                       D+ Low comparator threshold for 1.2V
+ VD+ _1p2_lo                                                D+ pin rising                             0.85     0.95     1.05    V
+                       detection
+                       D+ comparator threshold for non-
+ VD+ _1p2                                                                                             1.05              1.35    V
+                       standard adapter
+                       D- High comparator threshold for 1.2V
+ VD- _1p2_hi                                                 D- pin rising                            1.35      1.5      1.6    V
+                       detection
+                       D- Low comparator threshold for 1.2V
+ VD- _1p2_lo                                                  D- pin rising                           0.85     0.95     1.05    V
+                       detection
+                       D- comparator threshold for non-
+ VD- _1p2                                                                                             1.05              1.35    V
+                       standard adapter
+ THERMAL REGULATION AND THERMAL SHUTDOWN
+                       Junction temperature regulation
+ TREG                                                                                                           110             °C
+                       accuracy
+ TSHUT                 Thermal Shutdown Rising threshold      Temperature Increasing                           150              °C
+                       Thermal Shutdown Falling threshold     Temperature Decreasing                           130              °C
+ CHARGE MODE THERMISTOR COMPARATOR (JEITA 616J or HOT/COLD 616)
+                       TS pin voltage rising threshold,     As Percentage to REGN (0°C w/
+ VT1_RISE%                                                                                            72.4     73.3     74.2    %
+                       Charge suspended above this voltage. 103AT)
+                       TS pin voltage falling threshold.
+                       Charge re-enabled to 20% of ICHG
+ VT1_FALL%                                                    As Percentage to REGN                   71.5       72     72.5    %
+                       and VREG below this
+                       voltage.
+                       TS pin voltage rising threshold,
+                                                              As Percentage to REGN (10°C w/
+ VT2_RISE %            Charge back to 20% of ICHG and                                                67.75    68.25    68.75    %
+                                                              103AT)
+                       VREG above this voltage (616J).
+                       TS pin voltage falling threshold.
+ VT2_FALL%             Charge back to ICHG and VREG           As Percentage to REGN                  66.45    66.95    67.45    %
+                       below this voltage (616J)
+                       TS pin voltage falling threshold.
+                                                              As Percentage to REGN (45°C w/
+ VT3_FALL%             Charge back to ICHG and VREG                                                  44.25    44.75    45.25    %
+                                                              103AT)
+                       below this voltage (616J)
+                       TS pin voltage rising threshold.
+ VT3_RISE%             Charge back to ICHG and VREG           As Percentage to REGN                  45.55    46.05    46.55    %
+                       above this voltage. (616J)
+                       TS pin voltage falling threshold,      As Percentage to REGN (60°C w/
+ VT5_FALL%                                                                                            33.7     34.2     35.1    %
+                       charge suspended below this voltage.   103AT)
+                       TS pin voltage rising threshold.
+ VT5_RISE%             Charge back to ICHG and 4.1V above As Percentage to REGN                         35     35.5      36     %
+                       this voltage.
+                       TS pin voltage rising threshold.
+                                                            As Percentage to REGN (0°C w/
+ VT1_RISE_HC%          Charge suspended above this voltage.                                           72.4     73.3     74.2    %
+                                                            103AT)
+                       (616)
+                       TS pin voltage falling threshold.
+ VT1_FALL_HC%          Charge back to ICHG and VREG           As Percentage to REGN                     71       72      73     %
+                       below this voltage. (616)
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                         Submit Document Feedback      11
+                                                   Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                  www.ti.com
+
+8.5 Electrical Characteristics (continued)
+VVBUS_UVLOZ < VVBUS < VVBUS_OV and VVBUS > VBAT + VSLEEP, TJ = -40°C to +125°C, and TJ = 25°C for typical values (unless
+otherwise noted)
+                       PARAMETER                                      TEST CONDITIONS                   MIN       TYP       MAX      UNIT
+                     TS pin voltage falling threshold.
+                                                          As Percentage to REGN (45°C w/
+ VT3_FALL_HC%        Charge suspended below this voltage.                                             44.25     44.75      45.25      %
+                                                          103AT)
+                     (616)
+                     TS pin voltage rising threshold.
+ VT3_RISE _HC%       Charge back to ICHG and VREG            As Percentage to REGN                    45.55     46.05      46.55      %
+                     above this voltage. (616)
+ BOOST MODE THERMISTOR COMPARATOR (HOT/COLD)
+                     TS pin voltage rising threshold,
+                                                             As Percentage to REGN (–19.5°C w/
+ VBCOLD_RISE%        boost mode is suspended above this                                                 79.5         80      80.5     %
+                                                             103AT)
+                     voltage.
+                                                             As Percentage to REGN (0°C w/
+ VBCOLD_FALL%        TS pin voltage falling threshold                                                                72               %
+                                                             103AT)
+                     TS pin voltage threshold. boost mode    As Percentage to REGN, (64°C w/
+ VBHOT_FALL%                                                                                            30.2      31.2       32.2     %
+                     is suspended below this voltage.        103AT)
+                                                             As Percentage to REGN, (45°C w/
+ VBHOT_RISE%         TS pin voltage rising threshold                                                                 44               %
+                                                             103AT)
+ CHARGE OVERCURRENT COMPARATOR (CYCLE-BY-CYCLE)
+                     HSFET cycle-by-cycle overcurrent
+ IHSFET_OCP                                                                                              5.2                  8.0      A
+                     threshold
+ SWITCHING CONVERTER
+ FSW                 PWM switching frequency                 Oscillator frequency                       1.32         1.5     1.68    MHz
+ DMAX                Maximum PWM Duty Cycle                                                                          97               %
+ BOOST MODE CONVERTER
+                     Battery voltage exiting boost mode      VVBAT falling                               2.6         2.8      2.9      V
+ VBATLOWV_OTG
+                     Battery voltage entering boost mode     VVBAT rising                                2.9         3.0     3.15      V
+                     Boost mode voltage regulation
+ VBST_ACC                                                    IVBUS = 0A, BOOST_V = 5V                   4.85          5      5.15      V
+                     accuracy
+                     Boost mode current regulation
+ IBST_ACC                                                                                                1.2         1.4      1.6      A
+                     accuracy
+                     Boost mode battery discharge current
+ ISYS_OCP_Q4                                                                                              9          10                A
+                     clamp on BATFET Q4
+ REGN LDO
+                                                             VVBUS = 5V, IREGN = 20mA                   4.58         4.7      4.8      V
+ VREGN               REGN LDO output voltage
+                                                             VVBUS = 9V, IREGN = 20mA                    5.6          6       6.5      V
+ IREGN               REGN LDO current limit                  VVBUS = 5V, VREGN = 3.8V                    50                           mA
+ LOGIC INPUT PIN
+ VIH                 Input high threshold level (/CE)                                                    1.3                           V
+ VIL                 Input low threshold level (/CE)                                                                          0.4      V
+ IIN_BIAS            High-level leakage current (/CE)        Pull up rail 1.8V                                                   1    µA
+ LOGIC OUTPUT PIN
+ VOL                 Output low threshold level (STAT, /PG) Sink current = 5mA                                                0.4      V
+ IOUT_BIAS           High-level leakage current (STAT, /PG) Pull up rail 1.8V                                                    1    µA
+
+
+
+8.6 Timing Requirements
+                                                                                                  MIN          NOM         MAX       UNIT
+ VBUS / VBAT POWER UP
+ tPOORSRC               Bad adapter detection duration                                                          30                   ms
+
+
+12       Submit Document Feedback                                                                Copyright © 2022 Texas Instruments Incorporated
+
+                                                  Product Folder Links: BQ25616 BQ25616J
+                                                                                                                 BQ25616, BQ25616J
+www.ti.com                                                                           SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+8.6 Timing Requirements (continued)
+                                                                                                MIN      NOM         MAX    UNIT
+ tPOORSRC_RETRY           Bad adapter detection retry wait time                                              2               s
+ BATTERY CHARGER
+ tTERM_DGL                Deglitch time for charge termination                                              30              ms
+ tRECHG_DGL               Deglitch time for recharge threshold                                              30              ms
+ tTOP_OFF                 Typical top-off timer                                                             30              min
+ tSAFETY                  Charge safety timer accuracy                                            8         10         12    hr
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                       Submit Document Feedback     13
+                                                   Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                                                                                                            www.ti.com
+
+8.7 Typical Characteristics
+                                  100                                                                                                                  100
+
+                                   95
+                                                                                                                                                        95
+                                   90
+
+
+
+
+      Charge Efficiency (%)                                                                                        Boost Efficiency (%)
+                                   85                                                                                                                   90
+                                   80
+                                                                                                                                                        85
+                                   75
+
+                                   70                                                      VBUS Voltage
+                                                                                                 5V                                                     80
+                                   65                                                            9V
+                                                                                                 12 V
+                                   60                                                                                                                   75
+                                        0         0.5          1          1.5         2       2.5           3                                                0         0.2         0.4       0.6       0.8           1         1.2
+                                                                   Charge Current (A)                                                                                              Boost Output Current (A)                     D002
+                                                                                                            D001
+
+                                  fSW = 1.5 MHz                             Inductor DCR = 18 mΩ                                                       VOTG = 5.0 V                             inductor DCR = 18 mΩ
+                                  VBAT = 3.8 V                                                                                                         VBAT = 3.8 V
+                                    Figure 8-1. Charge Efficiency vs. Charge Current                                                                             Figure 8-2. Efficiency vs. OTG Current
+                                  4.5                                                                                                                  2.75
+                                                                                      VBATREG = 4.208 V                                                                                                       IINDPM = 1.8 A
+                                                                                                                                                        2.5
+                                                                                      VBATREG = 4.352 V                                                                                                       IINDPM = 1.28 A
+                                                                                                                                                       2.25                                                   IINDPM = 0.52 A
+
+
+
+
+      BATREG Charge Voltage (V)
+                                  4.4
+
+
+
+
+                                                                                                                   Input Current Limit (A)
+                                                                                                                                                         2
+                                                                                                                                                       1.75
+                                  4.3
+                                                                                                                                                        1.5
+                                                                                                                                                       1.25
+                                  4.2                                                                                                                    1
+                                                                                                                                                       0.75
+                                  4.1                                                                                                                   0.5
+                                                                                                                                                       0.25
+
+                                   4                                                                                                                     0
+                                   -40      -25   -10    5      20 35 50 65 80                95    110 125                                              -40      -25        -10     5     20    35     50      65        80   95
+                                                             Junction Temperature (°C)                                                                                             Junction Temperature (°C)                    D001
+                                                                                                            D001
+     Figure 8-3. BATREG Charge Voltage vs. Junction Temperature                                                                                        VVBUS = 5 V
+                                                                                                                                           Figure 8-4. Input Current Limit vs. Junction Temperature
+                                  2.6                                                                                                                  486
+                                  2.4                                                       ICHG = 1.8 A                                                                                                        RILIM = 265 :
+                                                                                            ICHG = 1.2 A                                               484                                                      RILIM = 374 :
+
+
+
+
+                                                                                                                   Input Current Limit Setting Ratio
+                                  2.2                                                       ICHG = 0.68 A                                                                                                       RILIM = 910 :
+                                    2
+                                                                                                                                                       482
+
+
+
+
+      Charge Current (A)
+                                  1.8
+                                  1.6
+                                                                                                                                                       480
+                                  1.4
+                                  1.2
+                                                                                                                                                       478
+                                    1
+                                  0.8                                                                                                                  476
+                                  0.6
+                                  0.4                                                                                                                  474
+                                  0.2
+                                    0                                                                                                                  472
+                                    -40     -25    -10       5     20   35   50     65       80     95   110                                             -40     -25         -10     5     20    35     50      65        80   95
+                                                             Junction Temperature (°C)                                                                                             Junction Temperature (°C)                    D001
+                                                                                                            D001
+
+                                  VVBUS = 5 V                               VBAT = 3.8 V                                                                         VVBUS = 5 V                                             VBAT = 3.8 V
+                                  Figure 8-5. Charge Current vs. Junction Temperature                                                   Figure 8-6. Input Current Limit Setting Ratio vs. Junction
+                                                                                                                                                               Temperature
+
+
+
+
+14                                Submit Document Feedback                                                                                                                            Copyright © 2022 Texas Instruments Incorporated
+
+                                                                                          Product Folder Links: BQ25616 BQ25616J
+                                                                                                                                                         BQ25616, BQ25616J
+www.ti.com                                                                                                                  SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+8.7 Typical Characteristics (continued)
+                                                                         705
+                                                                                                                          RICHG = 372 :
+                                                                         700                                              RICHG = 562 :
+                                                                                                                          RICHG = 1100 :
+
+
+
+
+                                          Charge Current Setting Ratio
+                                                                         695
+
+                                                                         690
+
+                                                                         685
+
+                                                                         680
+
+                                                                         675
+
+                                                                         670
+
+                                                                         665
+
+                                                                         660
+                                                                           -40    -25   -10   5     20   35   50     65     80    95   110
+                                                                                              Junction Temperature (°C)                    D001
+
+                                         VVBUS = 5 V                                                                                                              VBAT = 3.8 V
+                                      Figure 8-7. Charge Current Setting Ratio vs. Junction Temperature
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                                                                   Submit Document Feedback       15
+                                                                                 Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                                                                                  www.ti.com
+
+
+9 Detailed Description
+9.1 Overview
+The BQ25616/616J device is a highly integrated 3.0-A switch-mode battery charger for single cell Li-ion and
+Li-polymer battery. It includes an input reverse-blocking FET (RBFET, Q1), high-side switching FET (HSFET,
+Q2), low-side switching FET (LSFET, Q3), and battery FET (BATFET, Q4), and bootstrap diode for the high-side
+gate drive.
+9.2 Functional Block Diagram
+
+                   VBUS                                                                                                                                                                   PMID
+     VIN
+                                                     VVVAC_PRESENT                                                                             RBFET (Q1)
+                                                                     +          UVLO
+                                                            VVAC
+                            IVBUS                                    ±                                                                          Q1 Gate
+                                                     VBAT + VSLEEP                                                                              Control
+                 ACDRV                                               +         SLEEP                              EN_REGN                                                                 REGN
+                                                             VVAC
+                                                                     ±                                                            REGN
+                  VAC                                                                                                  EN_HIZ      LDO
+                                                             VVAC
+                                                                     +          ACOV
+                                                          VVAC_OV
+                                                                     ±
+                                                                                                                        FBO                                                               BTST
+
+                                                                                  VVBUS
+                                                                                             +       VBUS_OVP_BOOST
+                                                                                VBST_OVP
+                                                                                             ±
+                                                                                       IQ2
+                                                                                             +            Q2_UCP_BOOST
+                                                                              VOTG_HSZCP
+                                      VVBUS                                                  ±
+                                               ±                                                                                                                 HSFET (Q2)
+                                     VINDPM                                            IQ3
+                                                                                             +            Q3_OCP_BOOST                                                                    SW
+                                               +
+                                                                                VOTG_BAT
+                                      IVBUS                                                  ±                                  CONVERTER
+                                               +                                                                                                          REGN
+                                                                                                                                  Control
+                                      IINDPM                                                      VBAT
+                                               ±                                                          +           BATOVP
+                                      IC TJ                                             104% × VREG                                                               LSFET (Q3)             PGND
+                                               +                                                          ±
+                                       TREG                                     VBAT         ILSFET_UCP                                                                 IQ2
+                                               ±                          +                               +            UCP                      Q2_OCP           +
+                                       VSYS                                                         IQ3                                                                 IHSFET_OCP
+                                                                                VREG
+                                               ±                          ±                               ±                                                      ±
+                                    VSYS_MIN                                                                                                                            VBTST - VSW
+                                                                                ICHG                               EN_HIZ
+                                               +                          +                                                                    REFRESH           +
+                                                                                                               EN_CHARGE                                                VBTST_REFRESH
+                                                                                ICHG_REG
+                                                                          ±                                     EN_BOOST                                         ±
+                                                                                                                                                                                          SYS
+
+                                                                                                                                                                 ICHG
+                                                                                                                                           VREG
+                                                                                                                                         ICHG_REG    Q4 Gate                    BATFET
+                                                                                                                                                     Control                     (Q4)
+                                                                                                               VPOORSRC                                                                    BAT
+                                                   REF                          POORSRC                    +
+                                                   DAC                                                         VVBUS
+                   ILIM                                        Converter                                   ±
+                                                              Control State                                    IC TJ
+                  ICHG                                          Machine         TSHUT                      +
+                                                                                                               TSHUT
+                  VSET                                                                                     ±
+
+
+
+                    D+    Input Source
+                            Detection           USB
+                    'Å
+                                               Adapter                                                         VREG -VRECHG
+                                                                                RECHRG                     +
+                  OTG                                                                                          VBAT
+                                                                                                           ±
+                                                                                                               ICHG
+                                                                                TERMINATION                +
+                                                                                                               ITERM
+                                                                                                           ±
+                                                                 CHARGE                                        VBATLOWV
+                  STAT                                          CONTROL         BATLOWV                    +
+                                                                  STATE                                        VBAT
+                                                                MACHINE                                    ±                                                            BQ25616(J)
+                                                                                                               VSHORT
+                                                                                BATSHORT                   +
+                    PG                                                                                         VBAT
+                                                                                                           ±                                          Battery
+                                                                                SUSPEND
+                                                                                                                                                     Sensing                              TS
+                                                                                                                                                    Thermistor                            (BQ25616, HOT/COLD)
+                                                                                                                                                                                            (BQ25616J, JEITA)
+
+
+                                                              CE
+
+
+
+
+16         Submit Document Feedback                                                                                                                  Copyright © 2022 Texas Instruments Incorporated
+
+                                                                     Product Folder Links: BQ25616 BQ25616J
+                                                                                                             BQ25616, BQ25616J
+www.ti.com                                                                          SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+9.3 Feature Description
+9.3.1 Power-On-Reset (POR)
+The device powers internal bias circuits from the higher voltage of VBUS and BAT. When VVBUS rises above
+VVBUS_UVLOZ or VBAT rises above VBAT_UVLOZ, the sleep comparator, battery depletion comparator, and BATFET
+driver are active.
+9.3.2 Device Power Up From Battery Without Input Source
+If only the battery is present and the voltage is above depletion threshold (VBAT _DPLZ), the BATFET turns on and
+connects the battery to the system. The REGN stays off to minimize the quiescent current. The low RDSON of
+BATFET and the low quiescent current on BAT minimize the conduction loss and maximize the battery run time.
+The device always monitors the discharge current through the BATFET. When the system is overloaded or
+shorted (IBAT > ISYS_OCP_Q4), the device turns off BATFET immediately until the input source plugs in again.
+9.3.3 Power Up From Input Source
+When an input source is plugged in, the device checks the input source voltage to turn on the REGN LDO and
+all the bias circuits. It detects and sets the input current limit before the buck converter is started. The power-up
+sequence from input source is as listed:
+1. Power Up ACFET, see Section 9.3.3.1 (optional)
+2. Power Up REGN LDO, see Section 9.3.3.2
+3. Poor Source Qualification, see Section 9.3.3.3
+4. Input Source Type Detection is based on D+/D– to set default input current limit (IINDPM threshold), see
+   Section 9.3.3.4
+5. Input Voltage Limit Threshold Setting (VINDPM threshold), see Section 9.3.3.5
+6. Power Up Converter, see Section 9.3.3.6
+9.3.3.1 Power Up ACFET
+The external ACFET provides an additional layer of voltage protection for the device. During input surge up to 30
+V, the charger turns off ACFET and converter with 130-ns response time to disconnect VBUS from VAC. If users
+don't need ACFET, they shall connect VAC to VBUS and keep ACDRV pin floating. The ACFET is enabled when
+all the below conditions are valid.
+The ACFET is enabled when all the below conditions are valid.
+•    VVAC_PRESENT < VVAC < VACOV.
+•    After tDEB (15 ms typ) delay is completed
+If one of the above conditions is not valid, ACFET keeps off. The battery powers the system If it is present.
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                      Submit Document Feedback     17
+                                                  Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                                           www.ti.com
+
+                               VACOV (rising)
+
+             *
+       VAC                     VVAC_PRESENT (rising)
+
+                                   tON_VBUS
+
+                                           90%
+
+     ACDRV                  tDEB                                                                                   VVAC_PRESENT (rising) < VAC < VACOV (rising)
+                                     10%
+                                                                                                                   must be valid before ACDRV goes high.
+
+
+
+      VBUS                                 90%
+
+                                    10%
+
+
+
+
+     (*) Stimulus from application
+     Note: beginning of blue lines indicate the trigger, and the arrow end of the blue line indicates the action
+
+
+                                                                 Figure 9-1. ACFET Startup Control
+
+9.3.3.2 Power Up REGN LDO
+The REGN LDO supplies internal bias circuits as well as the HSFET and LSFET gate drive. It also provides the
+bias rail to TS external resistors. The pull-up rail of STAT can be connected to REGN as well. The REGN LDO is
+enabled when all the below conditions are valid:
+•      VVBUS > VVBUS_UVLOZ
+•      In buck mode, ACFET turns on, VVBUS > VBAT + VSLEEPZ
+•      In boost mode, VVBUS < VBAT + VSLEEPZ
+•      After 220-ms delay is completed
+During high impedance mode , REGN LDO turns off. The battery powers up the system.
+9.3.3.3 Poor Source Qualification
+After the REGN LDO powers up, the device starts to check current capability of the input source. The first step is
+poor source detection.
+•      VBUS voltage above VPOORSRC when pulling IBADSRC (typical 30 mA)
+
+If the device fails the poor source detection, it repeats poor source qualification every 2 seconds.
+9.3.3.4 Input Source Type Detection (IINDPM Threshold)
+After poor source detection, the device runs input source detection through D+/D– lines . The D+/D– detection
+follows the USB Battery Charging Specification 1.2 (BC1.2) to detect standard (SDP/CDP/DCP) and non-
+standard adapters through USB D+/D– lines.
+9.3.3.4.1 D+/D– Detection Sets Input Current Limit
+The device contains a D+/D– based input source detection to set the input current limit when a 5-V adapter
+is plugged-in. The D+/D– detection includes standard USB BC1.2 and non-standard adapters. When an input
+source is plugged in, the device starts standard USB BC1.2 detection. The USB BC1.2 is capable of identifying
+Standard Downstream Port (SDP), Charging Downstream Port (CDP) and Dedicated Charging Port (DCP). The
+non-standard detection is used to distinguish vendor specific adapters (Apple and Samsung) based on their
+unique dividers on the D+/D– pins. If an adapter is detected as DCP, the input current limit is set at 2.4-A. If an
+adapter is detected as unknown, the input current limit is set by ILIM pin .
+The D+/D– automatically runs when adapter plugs in. The D+/D– detection contains three steps, DCD (Data
+Contact Detection), primary detection, and secondary detection.
+DCD (Data Contact Detection) uses a current source to detect when the D+/D– pins have made contact during
+an attach event. The protocol for data contact detect is as follows:
+
+18        Submit Document Feedback                                                                                         Copyright © 2022 Texas Instruments Incorporated
+
+                                                                   Product Folder Links: BQ25616 BQ25616J
+                                                                                                                BQ25616, BQ25616J
+www.ti.com                                                                             SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+•    Detect VBUS present and VBUS_GD (pass poor source detection)
+•    Turn on D+ IDP_SRC and the D– pull-down resistor RDM_DWN for 13 ms
+•    If the USB connector is properly attached, the D+ line goes from HIGH to LOW, wait up to 0.5 sec. When the
+     DCD timer of 0.5 sec is expired, the non-standard adapter detection is applied to set the input current limit.
+•    Turn off IDP_SRC and disconnect RDM_DWN
+The primary detection is used to distinguish between USB host (Standard Down Stream Port, or SDP) and
+different type of charging ports (Charging Down Stream Port, or CDP, and Dedicated Charging Port, or DCP).
+The protocol for primary detection is as follows:
+•    Turn on VDP_SRC on D+ and IDM_Sink on D– for 40 ms
+•    If portable device is attached to a USB host (SDP), the D– is below VREF_DAT. Otherwise, it is attached to
+     either CDP or DCP.
+•    Turn off VDP_SRC and IDM_Sink
+The secondary detection is used to distinguish two types of charging ports (CDP and DCP). The protocol for
+secondary detection is as follows:
+•    Turn on VDM_SRC on D- and IDP_Sink on D+ for 40 ms
+•    If portable device is attached to a Charging Downstream Port (CDP), the D+ is below VDAT_REF. Otherwise, it
+     is attached to DCP.
+•    Turn off VDM_SRC and IDP_Sink
+Most of the time, a CDP requires the portable device (such as smart phone, tablet) to send back an enumeration
+within 2.5 seconds of CDP plug-in. Otherwise, the port will power cycle back to SDP even the D+/D– detection
+indicates CDP.
+                                               Table 9-1. Non-Standard Adapter Detection
+    NON-STANDARD
+                                         D+ THRESHOLD                         D– THRESHOLD              INPUT CURRENT LIMIT (A)
+      ADAPTER
+        Divider 1                      VD+ within VD+/D- _2p8               VD– within VD+/D- _2p0                  2.1
+        Divider 2                      VD+ within VD+/D- _1p2               VD– within VD+/D- _1p2                  2
+        Divider 3                      VD+ within VD+/D- _2p0               VD– within VD+/D- _2p8                  1
+        Divider 4                      VD+ within VD+/D- _2p8               VD– within VD+/D- _2p8                  2.4
+
+                                  Table 9-2. Input Current Limit Setting from D+/D– Detection
+                             D+/D– DETECTION                            INPUT CURRENT LIMIT (IINDPM)
+                                   USB CDP                                            1.5 A
+                                   USB DCP                                            2.4 A
+                                   Divider 1                                          2.1 A
+                                   Divider 2                                          2.0 A
+                                   Divider 3                                          1.0 A
+                                   Divider 4                                          2.4 A
+                            Unknown 5-V Adapter                                  Set by ILIM pin
+
+
+9.3.3.5 Input Voltage Limit Threshold Setting (VINDPM Threshold)
+The device has two modes to set the VINDPM threshold.
+•    Fixed VINDPM threshold. VINDPM is set at 4.3 V.
+•    VINDPM threshold tracks the battery voltage to optimize the converter headroom between input and output.
+     The actual input voltage limit is the higher of the VINDPM setting (4.3-V) and VBAT + 200 mV.
+9.3.3.6 Power Up Converter in Buck Mode
+After the input current limit is set, the converter is enabled and the HSFET and LSFET start switching. The
+system voltage is powered from the converter instead of the battery. If battery charging is disabled, the BATFET
+turns off. Otherwise, the BATFET stays on to charge the battery.
+
+Copyright © 2022 Texas Instruments Incorporated                                                         Submit Document Feedback     19
+                                                    Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                           www.ti.com
+
+The device provides soft start when the system rail is ramping up. When the system rail is below VBAT_SHORT, the
+input current is limited to 200 mA . The system load should be appropriately planned not to exceed the 200-mA
+IINDPM limit. After the system rises above VBAT_SHORTZ, the device input current limit is the value set the by ILIM
+pin .
+As a battery charger, the device deploys a highly efficient 1.5-MHz step-down switching regulator. The fixed
+frequency oscillator keeps tight control of the switching frequency under all conditions of input voltage, battery
+voltage, charge current, and temperature simplifying output filter design.
+The converter supports PFM operation by default for fast transient response during system voltage regulation
+and better light load efficiency.
+9.3.4 Boost Mode Operation From Battery
+The device supports boost converter operation to deliver power from the battery to other portable devices
+through a USB port. The output voltage is regulated at 5 V and output current is up to 1.2 A with constant current
+regulation.
+Boost operation is enabled if the conditions below are valid:
+1. OTG pin HIGH
+2. VBUS less than VBAT + VSLEEP (in sleep mode) before converter starts.
+3. Voltage at TS (thermistor) pin, as a percentage of VREGN, is within acceptable range (VBHOT_RISE% < VTS% <
+   VBCOLD_FALL%)
+4. After 30-ms delay from boost mode enable .
+5. Not in any fault such as ISYS_OCP_Q4, TSHUT, ACOV or VBUS OV.
+
+The converter supports PFM operation at light load in Boost mode.
+9.3.5 Standalone Charger
+The BQ25616/616J is a standalone device without host control. Any change on CE, ICHG and ILIM pins will
+cause a real time internal reference change. Charging is enabled or disabled via the CE pin. D+/D– and ILIM
+pins control the input current limit settings. D+/D– detection and VSET pin setting only takes effect upon adapter
+plug-in.
+Charge current must be programmed to a value within a range of 300 mA to 3000 mA with a pull-down resistor
+on the ICHG pin. The charge current is set as:
+
+     IICHG = KICHG/RICHG                                                                                                      (1)
+
+Input current limit must be programmed to a value within a range of 500 mA to 3200 mA with a pull-down resistor
+on the ILIM pin. The input current limit is set as:
+
+     IIINDPM = KILIM/RILIM                                                                                                    (2)
+
+The battery regulation voltage is programmed with a pull-down resistor on the VSET pin as follows:
+•    RVSET > 50 kΩ (float pin): VREG = 4.20 V
+•    RVSET < 500 Ω (short pin): VREG = 4.35 V
+•    5kΩ < RVSET < 25 kΩ: VREG = 4.10 V
+                                    Table 9-3. Standalone Device Configuration
+                                                                      BQ25616/616J
+                                         USB OTG                         5 V/1.2 A
+                                       USB Detection                      D+/D–
+                                         VINDPM                  4.3 V and VBAT + 200 mV
+                                   VBUS Operating Range                 4 V - 13.5 V
+                                           VREG             VSET pin (4.20 V, 4.35 V, or 4.10 V)
+                                        Safety Timer                 10 hr fast charge
+
+
+20    Submit Document Feedback                                                             Copyright © 2022 Texas Instruments Incorporated
+
+                                           Product Folder Links: BQ25616 BQ25616J
+                                                                                                                                   BQ25616, BQ25616J
+www.ti.com                                                                                                SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+                                                    Table 9-3. Standalone Device Configuration
+                                                                    (continued)
+                                                                                            BQ25616/616J
+                                                    Pre-charge Timer                                2 hr
+                                                             IPRECHG                             5% of ICHG
+                                                              ITERM                              5% of ICHG
+                                                                                   JEITA 0-60°C (BQ25616J), Hot/Cold
+                                        Charging Temperature Profile
+                                                                                           0-45°C (BQ25616)
+                                          OTG Temperature Profile                           –20°C to +60°C
+
+
+If a fault is detected, the STAT pin will blink at 1 Hz. STAT pin will stop blinking when the fault goes away.
+All faults will be reset upon adapter re-connection. A boost mode fault will be cleared either by adapter
+re-connection or toggling of the OTG pin.
+9.3.6 Power Path Management
+The device accommodates a wide range of input sources such as USB, wall adapter, or car charger. The device
+provides automatic power path selection to supply the system (SYS) from the input source (VBUS), battery
+(BAT), or both.
+9.3.6.1 Narrow VDC Architecture
+When the battery is below the minimum system voltage setting, the BATFET operates in linear mode (LDO
+mode), and the system is typically 180 mV above the minimum system voltage setting. As the battery voltage
+rises above the minimum system voltage, the BATFET is fully on and the voltage difference between the system
+and battery is the VDS of the BATFET.
+When battery charging is disabled and above the minimum system voltage setting or charging is terminated, the
+system is always regulated at typically 50 mV above the battery voltage.
+                                                    4.5
+                                                                Minimum System Voltage
+                                                    4.3         Charge Disabled
+                                                                Charge Enabled
+
+                                                    4.1
+
+
+
+                                          SYS (V)
+                                                    3.9
+
+                                                    3.7
+
+                                                    3.5
+
+                                                    3.3
+
+                                                    3.1
+                                                       2.7     2.9     3.1   3.3     3.5   3.7      3.9     4.1   4.3
+                                                                                   BAT (V)                         D002
+
+
+                                              Figure 9-2. System Voltage vs Battery Voltage
+
+9.3.6.2 Dynamic Power Management
+To meet the maximum current limit in the USB specification and avoid overloading the adapter, the device
+features Dynamic Power Management (DPM), which continuously monitors the input current and input voltage.
+When input source is overloaded, either the current exceeds the input current limit (IINDPM) or the voltage falls
+below the input voltage limit (VINDPM). The device then reduces the charge current until the input current falls
+below the input current limit or the input voltage rises above the input voltage limit.
+When the charge current is reduced to zero, but the input source is still overloaded, the system voltage starts to
+drop. Once the system voltage falls below the battery voltage, the device automatically enters the supplement
+mode where the BATFET turns on and the battery starts discharging so that the system is supported from both
+the input source and battery.
+
+Copyright © 2022 Texas Instruments Incorporated                                                                            Submit Document Feedback     21
+                                                              Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                                      www.ti.com
+
+
+Figure 9-3 shows the DPM response with 9-V/1.2-A adapter, 3.2-V battery, 2.8-A charge current and 3.5-V
+minimum system voltage setting.
+                                                Voltage
+                                                                                                      VBUS
+                                                         9V
+
+
+
+                                                                                                      SYS
+                                                  3.6V
+                                                  3.4V
+                                                  3.2V                                                BAT
+                                                 3.18V
+
+
+
+
+                                               Current
+                                                         4A
+
+                                                     3.2A                                             ICHG
+                                                     2.8A
+                                                                                            ISYS
+
+                                                     1.2A                                                 IIN
+                                                     1.0A
+                                                     0.5A
+
+                                                     -0.6A
+                                                                        DPM                 DPM
+                                                                               Supplement
+
+                                                                  Figure 9-3. DPM Response
+
+9.3.6.3 Supplement Mode
+When the system voltage falls below the battery voltage, the BATFET turns on and the BATFET gate is
+regulated so that the minimum BATFET VDS stays at 30 mV when the current is low. This prevents oscillation
+from entering and exiting the supplement mode.
+As the discharge current increases, the BATFET gate is regulated with a higher voltage to reduce RDSON until
+the BATFET is in full conduction. At this point onwards, the BATFET VDS linearly increases with discharge
+current. Figure 9-4 shows the V-I curve of the BATFET gate regulation operation. The BATFET turns off to exit
+supplement mode when the battery is below battery depletion threshold.
+                                               4.5
+
+                                                4
+
+                                               3.5
+
+                                                3
+
+
+
+                                 Current (A)
+                                               2.5
+
+                                                2
+
+                                               1.5
+
+                                                1
+
+                                               0.5
+
+                                                0
+                                                     0        5    10   15    20 25 30 35       40   45         50   55
+                                                                              V(BAT-SYS) (mV)                        D001
+
+
+                                                                                                                      Plot1
+
+                                                                  Figure 9-4. BAFET V-I Curve
+
+9.3.7 Battery Charging Management
+The device charges a 1-cell Li-ion battery with up to 3.0-A charge current for a high capacity tablet battery. The
+19.5-mΩ BATFET improves charging efficiency and minimizes the voltage drop during discharging.
+
+22    Submit Document Feedback                                                                                        Copyright © 2022 Texas Instruments Incorporated
+
+                                                              Product Folder Links: BQ25616 BQ25616J
+                                                                                                                            BQ25616, BQ25616J
+www.ti.com                                                                                      SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+9.3.7.1 Autonomous Charging Cycle
+When battery charging is enabled (CE pin is LOW), the device autonomously completes a charging cycle. The
+device default charging parameters are listed in Table 9-4.
+                                          Table 9-4. Charging Parameter Default Settings
+                                              DEFAULT MODE                             BQ25616/616J
+                                                  Charging voltage              VSET pin, 4.10 V/4.20 V/4.35 V
+                                                  Charging current                         ICHG pin
+                                              Pre-charge current                         5% of ICHG
+                                             Termination current                         5% of ICHG
+                                                                                 JEITA (BQ25616J), Hot/Cold
+                                             Temperature profile
+                                                                                         (BQ25616)
+                                                    Safety timer                          10 hours
+
+
+A new charge cycle starts when the following conditions are valid:
+•    Converter starts
+•    Battery charging is enabled (CE is low)
+•    No thermistor fault on TS.
+•    No safety timer fault
+The device automatically terminates the charging cycle when the charging current is below the termination
+threshold, the battery voltage is above the recharge threshold, and the device is not in DPM mode or thermal
+regulation. When a fully charged battery is discharged below recharge threshold, the device automatically starts
+a new charging cycle. After the charge is done, a toggle of the CE pin initiates a new charging cycle. Adapter
+removal and replug will also restart a charging cycle.
+The STAT output indicates charging status: charging (LOW), charging complete or charge disable (HIGH), or
+charging fault (blinking).
+9.3.7.2 Battery Charging Profile
+The device charges the battery in five phases: battery short, preconditioning, constant current, constant voltage,
+and top-off trickle charging. At the beginning of a charging cycle, the device checks the battery voltage and
+regulates current and voltage accordingly.
+                                                     Table 9-5. Charging Current Setting
+                VBAT                                     CHARGING CURRENT                                         DEFAULT SETTING
+               < 2.2 V                                             IBAT_SHORT                                           100 mA
+            2.2 V to 3 V                                            IPRECHG                                      5% of ICHG pin setting
+                >3V                                                  ICHG                                           ICHG pin setting
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                                    Submit Document Feedback   23
+                                                       Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                      www.ti.com
+
+
+
+
+      Regulation Voltage
+
+                                                                                  Battery Voltage
+
+         Charge Current
+
+
+                                                                              Charge Current
+
+
+
+          VBATLOWV (3 V)
+
+
+
+          VSHORTZ (2.2 V)
+
+
+
+
+                 IPRECHG
+                    ITERM
+                   ISHORT
+
+                            Trickle Charge   Pre-charge         Fast Charge and Voltage Regulation
+                                                                                                                            Safety Timer
+                                                                                                            Top-off Timer
+                                                                                                                            Expiration
+
+
+
+
+                                                  Figure 9-5. Battery Charging Profile
+
+9.3.7.3 Charging Termination
+The device terminates a charge cycle when the battery voltage is above the recharge threshold, and the current
+is below termination current. After the charging cycle has completed, the BATFET turns off. STAT is asserted
+HIGH to indicate charging is done. The converter keeps running to power the system, and BATFET can turn on
+again to engage Section 9.3.6.3.
+If the device is in IINDPM/VINDPM regulation, or thermal regulation, the actual charging current will be less than
+the termination value. In this case, termination is temporarily disabled.
+When termination occurs, the STAT pin goes HIGH.
+The top-off timer is reset at one of the following conditions:
+1. Charge disable to enable
+2. Charger enters termination
+9.3.7.4 Thermistor Qualification
+The device provides a single thermistor input for battery temperature monitoring.
+9.3.7.4.1 JEITA Guideline Compliance During Charging Mode (BQ25616J)
+To improve the safety of charging Li-ion batteries, the JEITA guideline was released on April 20, 2007. The
+guideline emphasized the importance of avoiding a high charge current and high charge voltage at certain low
+and high temperature ranges.
+To initiate a charge cycle, the voltage on TS pin, as a percentage of VREGN, must be within the VT1_FALL% to
+VT5_RISE% thresholds. If the TS voltage percentage exceeds the T1-T5 range, the controller suspends charging,
+a TS fault is reported and waits until the battery temperature is within the T1-T5 range.
+At cool temperature (T1-T2), JEITA recommends the charge current to be reduced to 20% of ICHG. At warm
+temperature (T3-T5), JEITA recommends charge voltage less than 4.1 V.
+
+
+
+
+24    Submit Document Feedback                                                                       Copyright © 2022 Texas Instruments Incorporated
+
+                                                     Product Folder Links: BQ25616 BQ25616J
+                                                                                                                                              BQ25616, BQ25616J
+www.ti.com                                                                                            SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+
+                                                                                               JEITA_WARM_ISET
+                                                                                                   100% of ICHG
+
+
+
+
+                                                      JEITA_COOL_VSET
+
+
+
+
+                                   Charging Current                                                                 Charging Voltage
+                                                            VREG                             JEITA_WARM_VSET
+                                                                                                    4.1V
+
+
+
+
+                                                      JEITA_COOL_ISET
+                                                          20% of ICHG
+
+
+
+
+                                                       T1        T2                              T3           T5
+
+                                                        0   5    10 15 20 25 30         35 40 45 50            60
+                                                                      Battery Thermistor Temperature (°C)
+
+                                                                Figure 9-6. JEITA Profile (BQ25616J)
+
+Equation 3 through Equation 4 describe how to calculate resistor divider values on the TS pin.
+
+
+                                                                      REGN
+                                                                                      RT1
+                                                                          TS
+                                                                                                            NTC
+                                                                                      RT2                   103AT
+
+
+                                                                Figure 9-7. TS Pin Resistor Network
+
+
+
+                             %
+
+                                                                                                                                                           (3)
+
+
+
+                                                                                  %          %
+
+                                                        %                                    %                                                             (4)
+
+In the equations above, RNTC, T1 is the NTC thermistor resistance value at temperature T1 and RNTC, T5 is the
+NTC thermistor resistance value at temperature T5. Selecting a 0°C to 60°C range for a Li-ion or Li-polymer
+battery then:
+•    RNTC,T1 = 27.28 kΩ (0°C)
+•    RNTC,T5 = 3.02 kΩ (60°C)
+•    RT1 = 5.3 kΩ
+•    RT2 = 31.14 kΩ
+
+Copyright © 2022 Texas Instruments Incorporated                                                                                        Submit Document Feedback   25
+                                                                  Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                                          www.ti.com
+
+9.3.7.4.2 Hot/Cold Temperature Window During Charging Mode (BQ25616)
+The BQ25616 provides simple Hot/Cold window T1-T3 with VREG and ICHG set on the pins. When RT1 is 5.3 KΩ
+and RT2 is 31.14 KΩ, T1 is 0°C and T3 is 45°C.
+
+
+
+
+                                                            ICHG
+
+
+
+
+                                 Charging Current                                                         Charging Voltage
+                                                           VREG
+
+
+
+
+                                                    T1              T2                T3             T5
+                                                    0 5 10 15 20 25 30 35 40 45 50          60
+                                                        Battery Thermistor Temperature (°C)
+
+
+
+
+                                                         Figure 9-8. Hot/Cold Profile (BQ25616)
+
+9.3.7.4.3 Boost Mode Thermistor Monitor During Battery Discharge Mode
+For battery protection during Boost mode, the device monitors battery temperature to be within the VBCOLD and
+VBHOT thresholds. When RT1 is 5.3 kΩ and RT2 is 31.14 kΩ, TBCOLD default is -19.5°C and TBHOT default is
+64°C. When the temperature is outside of the temperature thresholds, Boost mode is suspended.
+9.3.7.5 Charging Safety Timer
+The device has a built-in safety timer to prevent an extended charging cycle due to abnormal battery conditions.
+The safety timer is 2 hours when the battery is below the VBATLOWV threshold and 10 hours when the battery is
+higher than the VBATLOWV threshold. When the safety timer expires, the STAT pin is blinking at 1 Hz to report a
+safety timer expiration fault.
+During IINDPM/VINDPM regulation, or thermal regulation, the safety timer counts at a half clock rate, because
+the actual charge current is likely below the setting. For example, if the charger is in input current regulation
+throughout the whole charging cycle, and the safety time is set to 10 hours, the safety timer will expire in 20
+hours.
+During faults of BAT_FAULT, NTC_FAULT that lead to charging suspend, the safety timer is suspended as well.
+Once the fault goes away, the timer resumes. If the user stops the current charging cycle, and starts it again, the
+timer gets reset (toggle of CE pin).
+9.3.8 Status Outputs (PG, STAT)
+9.3.8.1 Power Good Indicator (PG Pin)
+The PG pin goes LOW to indicate a good input source when:
+•    VVBUS above VVBUS_UVLO
+•    VVBUS above battery (not in sleep)
+
+26    Submit Document Feedback                                                                            Copyright © 2022 Texas Instruments Incorporated
+
+                                                            Product Folder Links: BQ25616 BQ25616J
+                                                                                                                    BQ25616, BQ25616J
+www.ti.com                                                                                 SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+•    VVBUS below VACOV threshold
+•    VVBUS above VPOORSRC (typical 3.8 V) when IBADSRC (typical 30 mA) current is applied (not a poor source)
+•    Completed Section 9.3.3.4
+9.3.8.2 Charging Status Indicator (STAT)
+The device indicates the charging state on the open drain STAT pin. The STAT pin can drive an LED.
+                                                       Table 9-6. STAT Pin State
+                                                  CHARGING STATE                                                      STAT INDICATOR
+ Charging in progress (including recharge)                                                                                   LOW
+ Charging termination (top off timer may be running)                                                                         HIGH
+ Sleep mode, charge disable, Boost mode                                                                                      HIGH
+ Charge suspend (input overvoltage, TS fault, safety timer fault, or system overvoltage)                                Blinking at 1 Hz
+
+
+9.3.9 Protections
+9.3.9.1 Input Current Limit
+The device's ILIM pin is to program maximum input current when D+/D– detection identifies an unknown adaptor
+plugged in. The maximum input current is set by a resistor from ILIM pin to ground as:
+
+                             KILIM
+                IINDPM =
+                             RILIM
+                                                                                                                                    (5)
+
+9.3.9.2 Voltage and Current Monitoring in Buck Mode
+9.3.9.2.1 Input Overvoltage Protection (ACOV)
+This device integrates the functionality of an overvoltage protector. The device can be paired with an external
+N-channel FET to block input voltages in excess of the VBUS rating. For correct operation, connect the cathode
+of the body diode to the VAC node. Back-to-back body diodes between VAC and VBUS are not recommended
+and will prevent correct operation. The input voltage is sensed via the VAC pin and the ACDRV pin is used
+to control the external FET gate for protection. The default OVP threshold is 14.2 V. The ACOV circuit has
+a reaction time of 130 ns (typical) to turn off the external ACFET. Note that turning off the external ACFET
+takes longer and depends on its gate capacitance. In addition to turning off the external ACFET, an ACOV
+event immediately stops converter switching whether in buck or Boost mode. The device automatically resumes
+normal operation once the input voltage drops back below the OVP threshold. During ACOV, REGN LDO is on,
+and the device does not enter HIZ mode.
+9.3.9.2.2 System Overvoltage Protection (SYSOVP)
+The charger device clamps the system voltage during a load transient so that the components connected to the
+system are not damaged due to high voltage. The VSYS_OVP threshold is about 300 mV above battery regulation
+voltage when battery charging is terminated. Upon SYSOVP, the converter stops switching immediately to clamp
+the overshoot. The charger pulls 30-mA ISYS_LOAD discharge current to bring down the system voltage.
+9.3.9.3 Voltage and Current Monitoring in Boost Mode
+9.3.9.3.1 Boost Mode Overvoltage Protection
+When PMID voltage rises above the regulation target and exceeds VBST_OVP, the device stops switching
+immediately and the device exits Boost mode after the Boost mode OVP lasts for 12 ms. Meanwhile, if VAC
+(and VBUS when shorted to VAC) voltage exceeds VACOV, the device exits Boost mode as well.
+9.3.9.4 Thermal Regulation and Thermal Shutdown
+9.3.9.4.1 Thermal Protection in Buck Mode
+Besides the battery temperature monitor on the TS pin, the device monitors the internal junction temperature
+TJ to avoid overheating the chip and limits the IC junction temperature in buck mode. When the internal
+junction temperature exceeds the thermal regulation limit (110°C), the device lowers down the charge current.
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                             Submit Document Feedback       27
+                                                  Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                    www.ti.com
+
+During thermal regulation, the actual charging current is usually below the programmed battery charging current.
+Therefore, termination is disabled, the safety timer runs at half the clock rate.
+Additionally, the device has thermal shutdown to turn off the converter and the BATFET when the IC surface
+temperature exceeds TSHUT 150°C. The BATFET and converter are enabled to recover when IC temperature is
+130°C.
+9.3.9.4.2 Thermal Protection in Boost Mode
+Besides the battery temperature monitor on the TS pin, the device monitors the internal junction temperature to
+provide thermal shutdown during Boost mode. When the IC junction temperature exceeds TSHUT 150°C, Boost
+mode is disabled . When the IC junction temperature is below 145°C, the host can re-enable Boost mode.
+9.3.9.5 Battery Protection
+9.3.9.5.1 Battery Overvoltage Protection (BATOVP)
+The battery overvoltage limit is clamped at 4% above battery regulation voltage. When battery overvoltage
+occurs, the charger device immediately stops switching.
+9.3.9.5.2 Battery Overdischarge Protection
+When the battery is discharged below VBAT_DPL_FALL, the BATFET latches off to protect the battery from
+overdischarge. To recover from overdischarge latch-off, an input source plug-in is required at VAC/VBUS.
+9.3.9.5.3 System Overcurrent Protection
+When the system is shorted or significantly overloaded (IBAT > IBATOP) and the current exceeds BATFET
+overcurrent limit, the BATFET latched off. The BATFET latch can be reset with VBUS plug-in.
+9.4 Device Functional Modes
+The BQ25616/616J is a standalone device and therefore does not have I2C functions.
+
+
+
+
+28    Submit Document Feedback                                                      Copyright © 2022 Texas Instruments Incorporated
+
+                                           Product Folder Links: BQ25616 BQ25616J
+                                                                                                                        BQ25616, BQ25616J
+www.ti.com                                                                                SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+10 Application and Implementation
+                                                                        Note
+       Information in the following applications sections is not part of the TI component specification,
+       and TI does not warrant its accuracy or completeness. TI’s customers are responsible for
+       determining suitability of components for their purposes, as well as validating and testing their design
+       implementation to confirm system functionality.
+
+10.1 Application Information
+A typical application consists of the device configured as a stand-alone power path management device and
+a single cell battery charger for Li-ion and Li-polymer batteries used in a wide range of smart phones and
+other portable devices. It integrates an input reverse-block FET (RBFET, Q1), high-side switching FET (HSFET,
+Q2), low-side switching FET (LSFET, Q3), and battery FET (BATFET Q4) between the system and battery. The
+device also integrates a bootstrap diode for the high-side gate drive.
+External ACFET is optional. When external OVP is not used, short the VBUS and VAC pins and allow the
+ACDRV pin to float.
+10.2 Typical Applications
+10.2.1 BQ25616/616J Application without External OVP
+
+                                                              VAC
+                            INPUT                                                                              SYSTEM
+                            3.9 V ± 14V                                                              1 µH     3.5V-4.35V
+
+                                                              VBUS                          SW
+                                                   1 µF               Q1       Q2                                      10 µF
+                                                                                          BTST
+                                                                                                    47 nF
+                                                              ACDRV              Q3
+                                                                                         REGN
+                                                              PMID
+                                                                                                   4. 7 µF
+                                                  10 µF
+                                                                                          PGND
+
+                                          SYS     SYS
+                                                                                           SYS
+
+                                                                                 Q4
+                                                              STAT
+
+                                                              PG                           BAT                 10 µF
+
+
+                                                              D+
+                                                                                                  REGN
+                 USB
+                                                              D-
+
+                                                              OTG                           TS
+                                                                                                                               +
+                 Host
+                                                              CE
+
+                                                              ILIM
+                                                                                                 BQ25616: HOT/COLD
+                                                                                                  BQ25616J: JEITA
+                                                              ICHG
+
+
+
+                                Float: 4.2V                   VSET
+                               Short: 4.35V                                BQ25616(J)
+                               10k : 4.1V
+
+
+                          Figure 10-1. BQ25616/616J Application Diagram without External OVP
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                              Submit Document Feedback   29
+                                                        Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                           www.ti.com
+
+10.2.1.1 Design Requirements
+For this design example, use the parameters shown in the table below.
+                                                   Table 10-1. Design Parameters
+                             PARAMETER                                                       VALUE
+                          VVBUS voltage range                                              4-V to 13.5-V
+                 Input current limit ( D+/D– Detection)                                       2.4-A
+                  Fast charge current limit ( ICHG pin)                                     ICHG pin
+                       Minimum system voltage                                                 3.5-V
+                 Battery regulation voltage ( VSET pin )                                      4.2-V
+
+
+10.2.1.2 Detailed Design Procedure
+10.2.1.2.1 Inductor Selection
+The 1.5-MHz switching frequency allows the use of small inductor and capacitor values to maintain an inductor
+saturation current higher than the charging current (ICHG) plus half the ripple current (IRIPPLE):
+
+     ISAT ≥ ICHG + (1/2) IRIPPLE                                                                                              (6)
+
+The inductor ripple current depends on the input voltage (VVBUS), the duty cycle (D = VBAT/VVBUS), the switching
+frequency (fS) and the inductance (L).
+
+                 VIN ´ D ´ (1 - D)
+     IRIPPLE =
+                      fs ´ L                                                                                                  (7)
+
+The maximum inductor ripple current occurs when the duty cycle (D) is 0.5 or approximately 0.5. Usually
+inductor ripple is designed in the range between 20% and 40% maximum charging current as a trade-off
+between inductor size and efficiency for a practical design.
+10.2.1.2.2 Input Capacitor and Resistor
+Design input capacitance to provide enough ripple current rating to absorb input switching ripple current. The
+worst case RMS ripple current is half of the charging current when duty cycle is 0.5. If the converter does not
+operate at 50% duty cycle, then the worst case capacitor RMS current I CIN occurs where the duty cycle is closest
+to 50% and can be estimated using Equation 8.
+
+     ICIN = ICHG ´ D ´ (1 - D)                                                                                                (8)
+
+Low ESR ceramic capacitor such as X7R or X5R is preferred for input decoupling capacitor and should be
+placed to the drain of the high-side MOSFET and source of the low-side MOSFET as close as possible. Voltage
+rating of the capacitor must be higher than normal input voltage level. A rating of 25-V or higher capacitor is
+preferred for 12-V input voltage. Capacitance of minimum 10 μF is suggested for typical of 3-A charging current.
+During high current output over 700 mA in boost mode, a 10 kΩ pull-down resistor on VBUS is recommended to
+keep VBUS low in case Q1 RBFET leakage gets high.
+10.2.1.2.3 Output Capacitor
+Ensure that the output capacitance has enough ripple current rating to absorb the output switching ripple current.
+Equation 9 shows the output capacitor RMS current ICOUT calculation.
+
+             I
+     ICOUT = RIPPLE » 0.29 ´ IRIPPLE
+             2´ 3                                                                                                             (9)
+
+The output capacitor voltage ripple can be calculated as follows:
+
+
+
+30    Submit Document Feedback                                                             Copyright © 2022 Texas Instruments Incorporated
+
+                                                  Product Folder Links: BQ25616 BQ25616J
+                                                                                                               BQ25616, BQ25616J
+www.ti.com                                                                            SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+                VOUT æ     V    ö
+      DVO =         2 ç
+                        1 - OUT ÷
+               8LCfs è      VIN ø                                                                                          (10)
+
+At certain input and output voltage and switching frequency, the voltage ripple can be reduced by increasing the
+output filter LC.
+The charger device has internal loop compensation optimized for >10-μF ceramic output capacitance. The
+preferred ceramic capacitor is 10-V rating, X7R or X5R.
+10.2.1.3 Application Curves
+
+
+
+
+       VVBUS = 5 V                        VVBAT = 3.2 V                     VVBUS = 5 V                 VVBAT = 3.2 V
+                                                                            ICHG = 2 A
+      Figure 10-2. Power-Up with Charge Disabled
+                                                                            Figure 10-3. Power-Up with Charge Enabled
+
+
+
+
+       VVBUS = 5 V                        VVBAT = 3.2 V
+                                                                            VVBUS = 5 V to 17V          VVBAT = 3.2 V
+    Figure 10-4. OVPFET Turn-on during Power-Up
+                                                                          Figure 10-5. OVPFET Turn-off during Input OVP
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                        Submit Document Feedback     31
+                                                    Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                    www.ti.com
+
+
+
+
+      VVBUS = 5 V                                                  VVBUS = 9 V
+      ISYS = 50 mA                Charge Disabled                  ISYS = 50 mA              Charge Disabled
+
+       Figure 10-6. PFM Switching in Buck Mode                      Figure 10-7. PFM Switching in Buck Mode
+
+
+
+
+      VVBUS = 12 V                                                 VVBUS = 5 V               VVBAT = 3.8 V
+      ISYS = 50 mA                Charge Disabled                  ICHG = 2 A
+
+       Figure 10-8. PFM Switching in Buck Mode                      Figure 10-9. PWM Switching in Buck Mode
+
+
+
+
+32    Submit Document Feedback                                                      Copyright © 2022 Texas Instruments Incorporated
+
+                                           Product Folder Links: BQ25616 BQ25616J
+                                                                                                               BQ25616, BQ25616J
+www.ti.com                                                                            SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+
+
+       VVBUS = 12 V                       VVBAT = 3.8 V                     VVBUS = 5 V                 VVBAT = 3.2 V
+       ICHG = 2 A                                                           ICHG = 2 A
+       Figure 10-10. PWM Switching in Buck mode                                      Figure 10-11. Charge Enable
+
+
+
+
+       VVBUS = 5 V                        VVBAT = 3.2 V
+       ICHG = 2 A                                                           VVBAT = 4 V
+                                                                            ILOAD= 50 mA                PFM Enabled
+                 Figure 10-12. Charge Disable
+                                                                                     Figure 10-13. OTG Switching
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                        Submit Document Feedback     33
+                                                    Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                           www.ti.com
+
+
+
+
+                                                                    VVBUS = 5 V                     IINDPM = 1 A
+      VVBAT = 4 V                                                   ISYS from 0 A to 2 A            ICHG = 1 A
+      ILOAD= 1 A                  PFM Enabled                       VBAT = 3.7 V
+               Figure 10-14. OTG Switching                              Figure 10-15. System Load Transient
+
+
+
+
+      VVBUS = 5 V                 IINDPM = 2 A                      VVBUS = 5 V                     IINDPM = 1 A
+      ISYS from 0 A to 4 A        ICHG = 1 A                        ISYS from 0 A to 2 A            ICHG = 2 A
+      VBAT = 3.7 V                                                  VBAT = 3.7 V
+
+          Figure 10-16. System Load Transient                           Figure 10-17. System Load Transient
+
+
+
+
+34    Submit Document Feedback                                                             Copyright © 2022 Texas Instruments Incorporated
+
+                                            Product Folder Links: BQ25616 BQ25616J
+                                                                                                                 BQ25616, BQ25616J
+www.ti.com                                                                             SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+
+
+       VVBUS = 5 V                        IINDPM = 1 A                      VVBUS = 5 V                  IINDPM = 2 A
+       ISYS from 0 A to 4 A               ICHG = 2 A                        ISYS from 0 A to 2 A         ICHG = 2 A
+       VBAT = 3.7 V                                                         VBAT = 3.7 V
+
+            Figure 10-18. System Load Transient                                 Figure 10-19. System Load Transient
+
+
+
+
+       VVBUS = 5 V                        IINDPM = 2 A
+       ISYS from 0 A to 4 A               ICHG = 2 A                        VBAT = 3.8 V                 CLOAD = 470 µF
+       VBAT = 3.7 V                                                                   Figure 10-21. OTG Start-Up
+            Figure 10-20. System Load Transient
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                         Submit Document Feedback     35
+                                                    Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                              www.ti.com
+
+10.2.2 BQ25616/616J Application with External OVP
+
+
+
+                                                        VAC
+             INPUT                                                                                       SYSTEM
+             3.9 V ± 14V                                                                       1 µH     3.5V-4.35V
+
+                                                        VBUS                          SW
+                           ACFET             1 µF               Q1       Q2                                      10 µF
+                                                                                    BTST
+                                                                                              47 nF
+                                                        ACDRV              Q3
+                                                                                   REGN
+                                                        PMID
+                                                                                             4. 7 µF
+                                            10 µF
+                                                                                    PGND
+
+                                     SYS    SYS
+                                                                                     SYS
+
+                                                                           Q4
+                                                        STAT
+
+                                                        PG                           BAT                 10 µF
+
+
+                                                        D+
+                                                                                            REGN
+              USB
+                                                        D-
+
+                                                        OTG                           TS
+                                                                                                                         +
+             Host
+                                                        CE
+
+                                                        ILIM
+                                                                                           BQ25616: HOT/COLD
+                                                                                            BQ25616J: JEITA
+                                                        ICHG
+
+
+
+                              Float: 4.2V               VSET
+                             Short: 4.35V                            BQ25616(J)
+                             10k : 4.1V
+
+
+
+
+                           Figure 10-22. BQ25616/616J Application Diagram with External OVP
+
+10.2.2.1 Design Requirements
+Refer to Section 10.2.1.1 for design requirements.
+10.2.2.2 Detailed Design Procedure
+Refer to Section 10.2.1.2 for detailed design procedure.
+10.2.2.3 Application Curves
+Refer to Section 10.2.1.3 for application curves.
+
+
+
+
+36    Submit Document Feedback                                                                Copyright © 2022 Texas Instruments Incorporated
+
+                                                  Product Folder Links: BQ25616 BQ25616J
+                                                                                                             BQ25616, BQ25616J
+www.ti.com                                                                          SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+11 Power Supply Recommendations
+In order to provide an output voltage on SYS, the battery charger requires a power supply between 4 V and
+13.5 V input with at least a 100-mA current rating connected to VBUS and a single-cell Li-ion battery with battery
+voltage greater than VBAT_UVLOZ connected to BAT. The source current rating needs to be at least 3 A in order for
+the buck converter of the charger to provide maximum output power to SYS.
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                      Submit Document Feedback     37
+                                                  Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                    www.ti.com
+
+
+12 Layout
+12.1 Layout Guidelines
+The switching node rise and fall times should be minimized for minimum switching loss. Proper layout of
+the components to minimize the high frequency current path loop (see Figure 12-1) is important to prevent
+electrical and magnetic field radiation and high frequency resonant problems. Follow this specific order carefully
+to achieve the proper layout.
+1. Place an input capacitor as close as possible to the PMID pin and GND pin connections and use the shortest
+   copper trace connection or GND plane. Add a 1-nF small size (such as 0402 or 0201) decoupling cap for the
+   high frequency noise filter and EMI improvement.
+2. Place the inductor input pin as close as possible to SW pin. Minimize the copper area of this trace to lower
+   electrical and magnetic field radiation but make the trace wide enough to carry the charging current. Do not
+   use multiple layers in parallel for this connection. Minimize parasitic capacitance from this area to any other
+   trace or plane.
+3. Put the output capacitor near to the inductor and the device. Ground connections need to be tied to the IC
+   ground with a short copper trace connection or GND plane.
+4. Route the analog ground separately from power ground. Connect the analog ground and connect power
+   ground separately. Connect the analog ground and power ground together using the thermal pad as the
+   single ground connection point. Or use a 0-Ω resistor to tie the analog ground to power ground.
+5. Use a single ground connection to tie the charger power ground to the charger analog ground just beneath
+   the device. Use ground copper pour but avoid power pins to reduce inductive and capacitive noise coupling.
+6. Place the decoupling capacitors next to the IC pins and make the trace connection as short as possible.
+7. It is critical that the exposed thermal pad on the backside of the device package be soldered to the PCB
+   ground. Ensure that there are sufficient thermal vias directly under the IC, connecting to the ground plane on
+   the other layers.
+8. Ensure that the number and sizes of vias allow enough copper for a given current path.
+See the BQ25618 BMS024 Evaluation Module User's Guide and BQ25619 BMS025 Evaluation Module
+EVM User's Guide for the recommended component placement with trace and via locations. For the VQFN
+information, refer to Quad Flatpack No-Lead Logic Packages Application Report and QFN and SON PCB
+Attachment Application Report.
+12.2 Layout Example
+
+
+
+                                                                                         +
+                                 +
+                                 ±
+
+
+
+
+                                     Figure 12-1. High Frequency Current Path
+
+
+
+
+38    Submit Document Feedback                                                      Copyright © 2022 Texas Instruments Incorporated
+
+                                           Product Folder Links: BQ25616 BQ25616J
+                                                                                                             BQ25616, BQ25616J
+www.ti.com                                                                          SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+
+
+                                                    Figure 12-2. Layout Example
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                      Submit Document Feedback     39
+                                                  Product Folder Links: BQ25616 BQ25616J
+BQ25616, BQ25616J
+SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022                                                                               www.ti.com
+
+
+13 Device and Documentation Support
+13.1 Device Support
+13.1.1 Third-Party Products Disclaimer
+TI'S PUBLICATION OF INFORMATION REGARDING THIRD-PARTY PRODUCTS OR SERVICES DOES NOT
+CONSTITUTE AN ENDORSEMENT REGARDING THE SUITABILITY OF SUCH PRODUCTS OR SERVICES
+OR A WARRANTY, REPRESENTATION OR ENDORSEMENT OF SUCH PRODUCTS OR SERVICES, EITHER
+ALONE OR IN COMBINATION WITH ANY TI PRODUCT OR SERVICE.
+13.2 Documentation Support
+13.2.1 Related Documentation
+For related documentation see the following:
+•    BQ25619 BMS025 Evaluation Module User's Guide
+•    BQ25618 BMS024 Evaluation Module User's Guide
+13.3 Receiving Notification of Documentation Updates
+To receive notification of documentation updates, navigate to the device product folder on ti.com. Click on
+Subscribe to updates to register and receive a weekly digest of any product information that has changed. For
+change details, review the revision history included in any revised document.
+13.4 Support Resources
+TI E2E™ support forums are an engineer's go-to source for fast, verified answers and design help — straight
+from the experts. Search existing answers or ask your own question to get the quick design help you need.
+Linked content is provided "AS IS" by the respective contributors. They do not constitute TI specifications and do
+not necessarily reflect TI's views; see TI's Terms of Use.
+13.5 Trademarks
+TI E2E™ is a trademark of Texas Instruments.
+All trademarks are the property of their respective owners.
+13.6 Electrostatic Discharge Caution
+                This integrated circuit can be damaged by ESD. Texas Instruments recommends that all integrated circuits be handled
+                with appropriate precautions. Failure to observe proper handling and installation procedures can cause damage.
+                ESD damage can range from subtle performance degradation to complete device failure. Precision integrated circuits may
+                be more susceptible to damage because very small parametric changes could cause the device not to meet its published
+                specifications.
+
+
+13.7 Glossary
+ TI Glossary        This glossary lists and explains terms, acronyms, and definitions.
+
+
+
+
+40    Submit Document Feedback                                                                 Copyright © 2022 Texas Instruments Incorporated
+
+                                              Product Folder Links: BQ25616 BQ25616J
+                                                                                                             BQ25616, BQ25616J
+www.ti.com                                                                          SLUSDF7A – JANUARY 2020 – REVISED FEBRUARY 2022
+
+
+14 Mechanical, Packaging, and Orderable Information
+The following pages include mechanical, packaging, and orderable information. This information is the most
+current data available for the designated devices. This data is subject to change without notice and revision of
+this document. For browser-based versions of this data sheet, refer to the left-hand navigation.
+
+
+
+
+Copyright © 2022 Texas Instruments Incorporated                                                      Submit Document Feedback     41
+                                                  Product Folder Links: BQ25616 BQ25616J
+                                                                                                                                                                     PACKAGE OPTION ADDENDUM
+
+       www.ti.com                                                                                                                                                                                                    9-Nov-2025
+
+
+
+
+PACKAGING INFORMATION
+
+       Orderable part number          Status     Material type      Package | Pins      Package qty | Carrier       RoHS             Lead finish/               MSL rating/          Op temp (°C)               Part marking
+                                        (1)            (2)                                                            (3)            Ball material              Peak reflow                                           (6)
+                                                                                                                                          (4)                       (5)
+
+          BQ25616JRTWR                Active      Production       WQFN (RTW) | 24       3000 | LARGE T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                    BQ
+                                                                                                                                                                                                                   25616J
+         BQ25616JRTWR.A               Active      Production       WQFN (RTW) | 24       3000 | LARGE T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                    BQ
+                                                                                                                                                                                                                   25616J
+          BQ25616JRTWT                Active      Production       WQFN (RTW) | 24        250 | SMALL T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                    BQ
+                                                                                                                                                                                                                   25616J
+         BQ25616JRTWT.A               Active      Production       WQFN (RTW) | 24        250 | SMALL T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                    BQ
+                                                                                                                                                                                                                   25616J
+           BQ25616RTWR                Active      Production       WQFN (RTW) | 24       3000 | LARGE T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                 BQ25616
+          BQ25616RTWR.A               Active      Production       WQFN (RTW) | 24       3000 | LARGE T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                 BQ25616
+           BQ25616RTWT                Active      Production       WQFN (RTW) | 24        250 | SMALL T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                 BQ25616
+          BQ25616RTWT.A               Active      Production       WQFN (RTW) | 24        250 | SMALL T&R            Yes               NIPDAU            Level-1-260C-UNLIM             -40 to 85                 BQ25616
+
+(1)
+      Status: For more details on status, see our product life cycle.
+
+(2)
+   Material type: When designated, preproduction parts are prototypes/experimental devices, and are not yet approved or released for full production. Testing and final process, including without limitation quality assurance,
+reliability performance testing, and/or process qualification, may not yet be complete, and this item is subject to further changes or possible discontinuation. If available for ordering, purchases will be subject to an additional
+waiver at checkout, and are intended for early internal evaluation purposes only. These items are sold without warranties of any kind.
+
+(3)
+      RoHS values: Yes, No, RoHS Exempt. See the TI RoHS Statement for additional information and value definition.
+
+(4)
+   Lead finish/Ball material: Parts may have multiple material finish options. Finish options are separated by a vertical ruled line. Lead finish/Ball material values may wrap to two lines if the finish value exceeds the maximum
+column width.
+
+(5)
+  MSL rating/Peak reflow: The moisture sensitivity level ratings and peak solder (reflow) temperatures. In the event that a part has multiple moisture sensitivity ratings, only the lowest level per JEDEC standards is shown.
+Refer to the shipping label for the actual reflow temperature that will be used to mount the part to the printed circuit board.
+
+(6)
+      Part marking: There may be an additional marking, which relates to the logo, the lot trace code information, or the environmental category of the part.
+
+Multiple part markings will be inside parentheses. Only one part marking contained in parentheses and separated by a "~" will appear on a part. If a line is indented then it is a continuation of the previous line and the two
+combined represent the entire part marking for that device.
+
+
+
+
+                                                                                                          Addendum-Page 1
+                                                                                                                                                                      PACKAGE OPTION ADDENDUM
+
+    www.ti.com                                                                                                                                                                                                    9-Nov-2025
+
+
+
+
+Important Information and Disclaimer:The information provided on this page represents TI's knowledge and belief as of the date that it is provided. TI bases its knowledge and belief on information provided by third parties, and
+makes no representation or warranty as to the accuracy of such information. Efforts are underway to better integrate information from third parties. TI has taken and continues to take reasonable steps to provide representative
+and accurate information but may not have conducted destructive testing or chemical analysis on incoming materials and chemicals. TI and TI suppliers consider certain information to be proprietary, and thus CAS numbers
+and other limited information may not be available for release.
+
+In no event shall TI's liability arising out of such information exceed the total purchase price of the TI part(s) at issue in this document sold by TI to Customer on an annual basis.
+
+
+
+
+                                                                                                          Addendum-Page 2
+                                                                              PACKAGE MATERIALS INFORMATION
+
+www.ti.com                                                                                                                                       3-Sep-2026
+
+
+
+TAPE AND REEL INFORMATION
+
+       REEL DIMENSIONS                                                                     TAPE DIMENSIONS
+                                                                                      K0       P1
+
+
+
+                                                                                                                      B0 W
+                                       Reel
+                                     Diameter
+                                                                                   Cavity           A0
+                                                               A0   Dimension designed to accommodate the component width
+                                                               B0   Dimension designed to accommodate the component length
+                                                               K0   Dimension designed to accommodate the component thickness
+                                                               W    Overall width of the carrier tape
+                                                               P1   Pitch between successive cavity centers
+
+
+                                      Reel Width (W1)
+                              QUADRANT ASSIGNMENTS FOR PIN 1 ORIENTATION IN TAPE
+
+                                                                                                     Sprocket Holes
+
+
+                                                Q1        Q2          Q1    Q2
+
+                                                Q3        Q4          Q3    Q4                  User Direction of Feed
+
+
+
+                                                           Pocket Quadrants
+
+
+*All dimensions are nominal
+             Device           Package Package Pins             SPQ        Reel   Reel   A0                  B0         K0     P1     W     Pin1
+                               Type Drawing                             Diameter Width (mm)                (mm)       (mm)   (mm)   (mm) Quadrant
+                                                                          (mm) W1 (mm)
+     BQ25616JRTWR             WQFN     RTW           24        3000        330.0        12.4        4.25   4.25       1.15   8.0    12.0    Q2
+     BQ25616JRTWT             WQFN     RTW           24         250        180.0        12.4        4.25   4.25       1.15   8.0    12.0    Q2
+     BQ25616RTWR              WQFN     RTW           24        3000        330.0        12.4        4.25   4.25       1.15   8.0    12.0    Q2
+     BQ25616RTWT              WQFN     RTW           24         250        180.0        12.4        4.25   4.25       1.15   8.0    12.0    Q2
+
+
+
+
+                                                                      Pack Materials-Page 1
+                                                                PACKAGE MATERIALS INFORMATION
+
+www.ti.com                                                                                                              3-Sep-2026
+
+
+
+ TAPE AND REEL BOX DIMENSIONS
+
+
+
+
+                                                               Width (mm)
+                                                                              H
+
+
+
+
+                      W                                   L
+
+
+
+
+*All dimensions are nominal
+             Device           Package Type   Package Drawing   Pins         SPQ    Length (mm)   Width (mm)   Height (mm)
+     BQ25616JRTWR                WQFN             RTW           24          3000      360.0        360.0         36.0
+     BQ25616JRTWT                WQFN             RTW           24          250       210.0        185.0         35.0
+      BQ25616RTWR                WQFN             RTW           24          3000      360.0        360.0         36.0
+      BQ25616RTWT                WQFN             RTW           24          250       210.0        185.0         35.0
+
+
+
+
+                                                        Pack Materials-Page 2
+                                                                  GENERIC PACKAGE VIEW
+RTW 24                                                                  WQFN - 0.8 mm max height
+4 x 4, 0.5 mm pitch                                                         PLASTIC QUAD FLATPACK - NO LEAD
+
+
+
+
+               This image is a representation of the package family, actual package may vary.
+                             Refer to the product data sheet for package details.
+
+
+
+
+                                                                                                   4224801/A
+
+
+
+
+                                                    www.ti.com
+                                         IMPORTANT NOTICE AND DISCLAIMER
+TI PROVIDES TECHNICAL AND RELIABILITY DATA (INCLUDING DATASHEETS), DESIGN RESOURCES (INCLUDING REFERENCE
+DESIGNS), APPLICATION OR OTHER DESIGN ADVICE, WEB TOOLS, SAFETY INFORMATION, AND OTHER RESOURCES “AS IS”
+AND WITH ALL FAULTS, AND DISCLAIMS ALL WARRANTIES, EXPRESS AND IMPLIED, INCLUDING WITHOUT LIMITATION ANY
+IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT OF THIRD
+PARTY INTELLECTUAL PROPERTY RIGHTS.
+These resources are intended for skilled developers designing with TI products. You are solely responsible for (1) selecting the appropriate
+TI products for your application, (2) designing, validating and testing your application, and (3) ensuring your application meets applicable
+standards, and any other safety, security, regulatory or other requirements.
+These resources are subject to change without notice. TI grants you permission to use these resources only for development of an
+application that uses the TI products described in the resource. Other reproduction and display of these resources is prohibited. No license
+is granted to any other TI intellectual property right or to any third party intellectual property right. TI disclaims responsibility for, and you fully
+indemnify TI and its representatives against any claims, damages, costs, losses, and liabilities arising out of your use of these resources.
+TI’s products are provided subject to TI’s Terms of Sale, TI’s General Quality Guidelines, or other applicable terms available either on
+ti.com or provided in conjunction with such TI products. TI’s provision of these resources does not expand or otherwise alter TI’s applicable
+warranties or warranty disclaimers for TI products. Unless TI explicitly designates a product as custom or customer-specified, TI products
+are standard, catalog, general purpose devices.
+TI objects to and rejects any additional or different terms you may propose.
+IMPORTANT NOTICE
+
+                                                Copyright © 2026, Texas Instruments Incorporated
+                                                                Last updated 10/2025
+
