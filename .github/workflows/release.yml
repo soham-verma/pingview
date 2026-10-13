@@ -1,5 +1,9 @@
 name: Release
 
+# Push a tag like v0.2.0 and this builds PingView for every platform and
+# publishes a GitHub Release with the installers attached (same flow as
+# Pingnet).
+
 on:
   push:
     tags:
@@ -15,16 +19,23 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            args: --target universal-apple-darwin
-            rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
+            target: aarch64-apple-darwin
+            label: macos-arm64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            label: macos-x64
           - os: ubuntu-22.04
-            args: ''
-            rust_targets: ''
+            target: x86_64-unknown-linux-gnu
+            label: linux-x64
           - os: windows-latest
-            args: ''
-            rust_targets: ''
+            target: x86_64-pc-windows-msvc
+            label: windows-x64
 
     runs-on: ${{ matrix.os }}
+    env:
+      # Secrets can't be read in step `if:` conditions; expose whether the
+      # notarization key exists so unsigned builds still work without it.
+      HAS_APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_CONTENT != '' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -36,11 +47,12 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.rust_targets }}
+          targets: ${{ matrix.target }}
 
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
+          key: ${{ matrix.label }}
 
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-22.04'
@@ -66,10 +78,8 @@ jobs:
 
       - run: npm ci
 
-      # Notarization uses an App Store Connect API key (same setup as
-      # Pingnet). Skipped until the secret exists, so unsigned builds still work.
       - name: Write Apple API key (notarization)
-        if: startsWith(matrix.os, 'macos') && env.APPLE_API_KEY_CONTENT != ''
+        if: startsWith(matrix.os, 'macos') && env.HAS_APPLE_API_KEY == 'true'
         env:
           APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
         run: |
@@ -81,8 +91,9 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS signing (Developer ID Application) + notarization. Ignored
-          # on Linux/Windows runners.
+          # macOS code signing (Developer ID Application certificate) and
+          # notarization (App Store Connect API key). Ignored on Linux and
+          # Windows runners; without them macOS builds are unsigned.
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
@@ -92,7 +103,11 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'PingView ${{ github.ref_name }}'
-          releaseBody: 'Download the installer for your OS below. Plug in the receiver and open PingView.'
-          releaseDraft: true
+          releaseBody: |
+            Download the installer for your computer below, plug in the PingView receiver and open the app.
+            - macOS: `aarch64.dmg` for Apple silicon (M1 and newer), `x64.dmg` for Intel Macs
+            - Windows: `.msi` or `-setup.exe`
+            - Linux: `.deb` (Debian/Ubuntu) or `.AppImage`
+          releaseDraft: false
           prerelease: false
-          args: ${{ matrix.args }}
+          args: --target ${{ matrix.target }}

@@ -8,7 +8,7 @@ use crate::Fix;
 pub fn locate(timeout: Duration) -> Result<Fix, String> {
     let fail = |e: windows::core::Error| format!("Windows location failed: {}", e.message());
 
-    let access = Geolocator::RequestAccessAsync().map_err(fail)?.get().map_err(fail)?;
+    let access = Geolocator::RequestAccessAsync().map_err(fail)?.join().map_err(fail)?;
     if access != GeolocationAccessStatus::Allowed {
         return Err(
             "Location access is off. Turn it on in Settings › Privacy & security › Location, \
@@ -22,7 +22,7 @@ pub fn locate(timeout: Duration) -> Result<Fix, String> {
     let position = locator
         .GetGeopositionAsyncWithAgeAndTimeout(TimeSpan { Duration: 0 }, TimeSpan { Duration: ticks })
         .map_err(fail)?
-        .get()
+        .join()
         .map_err(fail)?;
     let coordinate = position.Coordinate().map_err(fail)?;
     let point = coordinate.Point().map_err(fail)?.Position().map_err(fail)?;
