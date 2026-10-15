@@ -1,6 +1,6 @@
 [package]
 name = "pingview"
-version = "0.1.0"
+version = "0.2.0"
 description = "Desktop ADS-B map for a uAvionix pingRX Pro over a USB bridge"
 authors = ["Soham"]
 license = "MIT"
