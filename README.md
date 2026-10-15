@@ -23,7 +23,7 @@ pingRX Pro ──UART 57600──► STM32F401 "Black Pill" (USB CDC bridge) ─
 
 **Wireless:** a Seeed XIAO ESP32-C3 on a battery replaces the Black Pill
 and streams the same data over Bluetooth LE (your computer keeps its Wi-Fi
-for internet) or Wi-Fi. PingView finds it on its own:
+for internet), or optionally Wi-Fi. PingView finds it on its own:
 
 ```
 pingRX Pro ──UART 57600──► XIAO ESP32-C3 ──Bluetooth LE, Wi-Fi (TCP 5760) or USB──► computer

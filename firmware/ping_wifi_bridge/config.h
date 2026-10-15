@@ -14,9 +14,10 @@
 // pairing here, so anyone in range could otherwise reconfigure the Ping.
 #define BLE_ALLOW_WRITES 0
 
-// Wi-Fi (TCP, access point, status page). Turn off to save ~80 mA if BLE
-// is all you use.
-#define ENABLE_WIFI 1
+// Wi-Fi (TCP, access point, status page). Off by default: it costs up to
+// ~80 mA (about 29 h -> 21 h on a 6 Ah battery) and Bluetooth covers PingView.
+// Set to 1 for Wi-Fi, e.g. to use QGroundControl or Mission Planner.
+#define ENABLE_WIFI 0
 
 // Raw MAVLink over TCP. 5760 is the usual MAVLink TCP port, so QGroundControl
 // and Mission Planner can connect too.

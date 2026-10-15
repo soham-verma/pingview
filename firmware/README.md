@@ -3,7 +3,7 @@
 Two bridges, both pass the pingRX Pro's MAVLink through unchanged:
 
 - `ping_wifi_bridge/`: **Seeed XIAO ESP32-C3**, battery powered, streams over
-  Bluetooth LE, Wi-Fi (TCP) and USB. PingView finds it on its own.
+  Bluetooth LE and USB, plus Wi-Fi (TCP) if enabled. PingView finds it on its own.
 - `ping_usb_bridge/`: STM32F401 Black Pill, USB only.
 
 ## Wi-Fi bridge (XIAO ESP32-C3)
@@ -50,7 +50,9 @@ Settings → Privacy & Security → Bluetooth.
 
 PingView tries USB first, then Bluetooth, then Wi-Fi.
 
-**Wi-Fi:** on power-up the bridge joins the saved network (20 s timeout). With none
+**Wi-Fi (off by default):** set `ENABLE_WIFI 1` in `config.h` and reflash.
+It costs up to ~80 mA, roughly 29 h → 21 h of battery on a 6 Ah cell. On
+power-up the bridge then joins the saved network (20 s timeout). With none
 saved, or if it isn't there, it starts its own access point
 **PingView-xxxx**, password `pingview`. In access-point mode it keeps
 retrying the saved network every minute while nobody's connected, so a phone
@@ -59,8 +61,7 @@ hotspot switched on after the receiver still works.
 PingView connects over Wi-Fi automatically either way: it finds the bridge via mDNS
 (`_pingview._tcp`), or tries `192.168.4.1:5760` when you're on its access
 point. Settings → Port lists Wi-Fi receivers too; USB still works and is
-preferred when plugged in. Set `ENABLE_WIFI 0` in `config.h` to save
-battery if you only use Bluetooth.
+preferred when plugged in.
 
 - **Access point**: simplest; your computer loses internet while joined
   (PingView's offline features all keep working).
