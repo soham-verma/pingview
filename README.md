@@ -21,7 +21,15 @@ pingRX Pro ──UART 57600──► STM32F401 "Black Pill" (USB CDC bridge) ─
 | RX  | PA9 (USART1 TX) |
 | GND | GND |
 
-Flashing the bridge firmware: see [`firmware/README.md`](firmware/README.md).
+**Wireless:** a Seeed XIAO ESP32-C3 on a battery replaces the Black Pill
+and streams the same data over Bluetooth LE (your computer keeps its Wi-Fi
+for internet), or optionally Wi-Fi. PingView finds it on its own:
+
+```
+pingRX Pro ──UART 57600──► XIAO ESP32-C3 ──Bluetooth LE, Wi-Fi (TCP 5760) or USB──► computer
+```
+
+Wiring, power and flashing for both bridges: see [`firmware/README.md`](firmware/README.md).
 
 ## Install
 
@@ -108,7 +116,7 @@ scripts/fetch_basemap.sh   # writes basemap-data/world.pmtiles, checksum-verifie
 Set `PINGVIEW_DEBUG_BASEMAP=1` to log the app's map-file and tile requests.
 
 Requirements: Rust (stable), Node 22+, and on Linux the
-[Tauri prerequisites](https://tauri.app/start/prerequisites/) plus `libudev-dev`.
+[Tauri prerequisites](https://tauri.app/start/prerequisites/) plus `libudev-dev` and `libdbus-1-dev` (Bluetooth).
 
 ```sh
 npm install

@@ -890,7 +890,8 @@ body {
 /* Map Options */
 .style-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, …): the 512 px thumbnails mustn't widen a column as they load. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.6rem;
   padding-top: 0.3rem;
 }
@@ -1378,6 +1379,7 @@ body {
 /* Map picker cards */
 .style-card {
   position: relative;
+  min-width: 0;
   border-radius: 10px;
   overflow: hidden;
   border: 1.5px solid rgba(255, 255, 255, 0.1);

@@ -1,8 +1,10 @@
 mod adsb;
 mod basemap;
+mod ble;
 mod assist;
 mod country;
 mod device;
+mod discover;
 mod history;
 mod mavlink;
 mod mbtiles;
@@ -458,7 +460,7 @@ pub fn run() {
 
             match std::env::var_os("PINGVIEW_REPLAY") {
                 Some(file) => device::spawn_replay(pipeline.clone(), file.into(), lookups),
-                None => device::spawn_serial(pipeline.clone(), settings.clone(), lookups),
+                None => device::spawn_receiver(pipeline.clone(), settings.clone(), lookups),
             }
             let network_area = Arc::new(Mutex::new(None));
             spawn_network_poller(pipeline.clone(), assist.clone(), settings.clone(), network_area.clone());
