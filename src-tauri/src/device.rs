@@ -1,5 +1,6 @@
-//! Finds the receiver, keeps it connected, and feeds its bytes into the
-//! pipeline. Also hosts replay mode (`PINGVIEW_REPLAY=<capture file>`).
+//! Finds the receiver (USB serial, or a Bluetooth LE / Wi-Fi bridge), keeps it
+//! connected, and feeds its bytes into the pipeline. Also hosts replay mode
+//! (`PINGVIEW_REPLAY=<capture file>`).
 
 use std::collections::HashSet;
 use std::io::{self, Read};
@@ -11,17 +12,23 @@ use std::time::{Duration, Instant};
 use chrono::Utc;
 use serialport::{SerialPortType, UsbPortInfo};
 
+use crate::ble::{self, BleLink};
+use crate::discover;
 use crate::pipeline::Pipeline;
 use crate::settings::Settings;
 use crate::store::ReceiverStatus;
 
-/// ST's generic USB CDC Virtual COM Port ID, which the Black Pill bridge uses.
-pub const USB_VID: u16 = 0x0483;
-pub const USB_PID: u16 = 0x5740;
+/// USB IDs of the bridges: ST's generic CDC Virtual COM Port (Black Pill)
+/// and the ESP32-C3's built-in USB Serial/JTAG (XIAO ESP32-C3).
+pub const USB_IDS: [(u16, u16); 2] = [(0x0483, 0x5740), (0x303A, 0x1001)];
 pub const BAUD: u32 = 57_600;
 const IDENTIFY_TIMEOUT: Duration = Duration::from_secs(5);
 const RETRY_DELAY: Duration = Duration::from_secs(2);
 const READ_TIMEOUT: Duration = Duration::from_millis(200);
+/// A Ping sends status frames every second even with no traffic, so this
+/// long without a byte means a wireless link is dead (TCP and BLE don't
+/// always say so).
+const WIRELESS_SILENCE: Duration = Duration::from_secs(10);
 
 /// Called with hexes that need a registration lookup.
 pub type LookupSink = Arc<dyn Fn(Vec<String>) + Send + Sync>;
@@ -34,7 +41,7 @@ pub struct PortInfo {
 }
 
 fn is_receiver(usb: &UsbPortInfo) -> bool {
-    usb.vid == USB_VID && usb.pid == USB_PID
+    USB_IDS.contains(&(usb.vid, usb.pid))
 }
 
 /// macOS lists every USB serial device twice; only the `cu.` callout
@@ -43,9 +50,11 @@ fn usable_name(name: &str) -> bool {
     !(cfg!(target_os = "macos") && name.starts_with("/dev/tty."))
 }
 
+/// Serial ports, then Bluetooth receivers in range, then Wi-Fi receivers
+/// found on the network.
 pub fn list_ports() -> Vec<PortInfo> {
     let ports = serialport::available_ports().unwrap_or_default();
-    ports
+    let mut list: Vec<PortInfo> = ports
         .into_iter()
         .filter(|p| usable_name(&p.port_name))
         .map(|p| {
@@ -64,20 +73,39 @@ pub fn list_ports() -> Vec<PortInfo> {
                 likely_receiver,
             }
         })
-        .collect()
+        .collect();
+    list.extend(ble::receivers().into_iter().map(|name| PortInfo {
+        description: "Bluetooth receiver".into(),
+        name,
+        likely_receiver: true,
+    }));
+    list.extend(discover::receivers().into_iter().map(|r| PortInfo {
+        description: match r.id {
+            Some(id) => format!("Wi-Fi receiver {id}"),
+            None => "Wi-Fi receiver".into(),
+        },
+        name: r.address,
+        likely_receiver: true,
+    }));
+    list
 }
 
-/// Ports to try, in order: the user's override, else every port with the
-/// receiver's USB ID that hasn't already been rejected.
+/// Ports to try, in order: the user's override, else every likely receiver
+/// (USB first, then Bluetooth, then Wi-Fi) that hasn't already been rejected, then the
+/// bridge's access-point address in case mDNS is blocked.
 pub fn candidates(ports: &[PortInfo], override_port: Option<&str>, rejected: &HashSet<String>) -> Vec<String> {
     if let Some(port) = override_port {
         return vec![port.to_string()];
     }
-    ports
+    let mut names: Vec<String> = ports
         .iter()
         .filter(|p| p.likely_receiver && !rejected.contains(&p.name))
         .map(|p| p.name.clone())
-        .collect()
+        .collect();
+    if !names.iter().any(|n| n == discover::AP_ADDRESS) && !rejected.contains(discover::AP_ADDRESS) {
+        names.push(discover::AP_ADDRESS.to_string());
+    }
+    names
 }
 
 pub fn open_error_detail(err: &serialport::Error) -> String {
@@ -95,13 +123,14 @@ pub fn open_error_detail(err: &serialport::Error) -> String {
 }
 
 /// Runs forever on its own thread: discover, open, read, reconnect.
-pub fn spawn_serial(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, lookups: LookupSink) {
+pub fn spawn_receiver(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, lookups: LookupSink) {
     thread::spawn(move || {
         let mut rejected: HashSet<String> = HashSet::new();
         loop {
             let override_port = settings.lock().unwrap().port.clone();
             let ports = list_ports();
             // A rejected port that disappears may come back as something else.
+            // The access-point address is retried each round (it's cheap).
             rejected.retain(|name| ports.iter().any(|p| &p.name == name));
             let names = candidates(&ports, override_port.as_deref(), &rejected);
             if names.is_empty() {
@@ -109,11 +138,38 @@ pub fn spawn_serial(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, loo
                 thread::sleep(RETRY_DELAY);
                 continue;
             }
+            let mut tried_any = false;
             for name in names {
-                match serialport::new(&name, BAUD).timeout(READ_TIMEOUT).open() {
-                    Ok(port) => {
+                let opened = if ble::is_ble(&name) {
+                    match ble::connect(&name, READ_TIMEOUT) {
+                        Ok(link) => Ok(Link::Ble(link)),
+                        // Usually just out of range; only report it if chosen.
+                        Err(_) if override_port.is_none() => continue,
+                        Err(e) => Err(format!("Couldn't connect to {}: {e}", &name[ble::SCHEME.len()..])),
+                    }
+                } else if discover::is_network(&name) {
+                    match discover::connect(&name) {
+                        Ok(stream) => {
+                            let _ = stream.set_read_timeout(Some(READ_TIMEOUT));
+                            Ok(Link::Network(stream))
+                        }
+                        // Auto-detect probes addresses that are usually absent;
+                        // only report failures for an address the user chose.
+                        Err(_) if override_port.is_none() => continue,
+                        Err(e) => Err(format!("Couldn't reach {name}: {e}")),
+                    }
+                } else {
+                    serialport::new(&name, BAUD)
+                        .timeout(READ_TIMEOUT)
+                        .open()
+                        .map(Link::Serial)
+                        .map_err(|e| open_error_detail(&e))
+                };
+                tried_any = true;
+                match opened {
+                    Ok(link) => {
                         pipeline.start_link(&name);
-                        let outcome = read_loop(port, &pipeline, &lookups, || {
+                        let outcome = read_loop(link, &pipeline, &lookups, || {
                             settings.lock().unwrap().port != override_port
                         });
                         if outcome == LinkEnd::NotAReceiver && override_port.is_none() {
@@ -127,10 +183,13 @@ pub fn spawn_serial(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, loo
                             );
                         }
                     }
-                    Err(e) => {
-                        pipeline.set_status(ReceiverStatus::Error, Some(&name), Some(open_error_detail(&e)));
+                    Err(detail) => {
+                        pipeline.set_status(ReceiverStatus::Error, Some(&name), Some(detail));
                     }
                 }
+            }
+            if !tried_any {
+                pipeline.set_status(ReceiverStatus::Searching, None, None);
             }
             thread::sleep(RETRY_DELAY);
         }
@@ -144,20 +203,47 @@ enum LinkEnd {
     SettingsChanged,
 }
 
+enum Link {
+    Serial(Box<dyn serialport::SerialPort>),
+    Network(std::net::TcpStream),
+    Ble(BleLink),
+}
+
+impl Read for Link {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        match self {
+            Link::Serial(port) => port.read(buf),
+            Link::Network(stream) => stream.read(buf),
+            Link::Ble(link) => link.read(buf),
+        }
+    }
+}
+
 fn read_loop(
-    mut port: Box<dyn serialport::SerialPort>,
+    mut link: Link,
     pipeline: &Pipeline,
     lookups: &LookupSink,
     settings_changed: impl Fn() -> bool,
 ) -> LinkEnd {
+    let wireless = !matches!(link, Link::Serial(_));
     let opened = Instant::now();
+    let mut last_byte = Instant::now();
     let mut buf = [0u8; 1024];
     loop {
-        match port.read(&mut buf) {
+        match link.read(&mut buf) {
+            // A closed TCP/BLE connection reads as 0 bytes; serial can too, harmlessly.
+            Ok(0) if wireless => return LinkEnd::Disconnected,
             Ok(0) => {}
-            Ok(n) => feed(pipeline, lookups, &buf[..n]),
-            Err(e) if e.kind() == io::ErrorKind::TimedOut => {}
+            Ok(n) => {
+                last_byte = Instant::now();
+                feed(pipeline, lookups, &buf[..n]);
+            }
+            // Read timeouts are TimedOut on Windows, WouldBlock on Unix sockets.
+            Err(e) if matches!(e.kind(), io::ErrorKind::TimedOut | io::ErrorKind::WouldBlock) => {}
             Err(_) => return LinkEnd::Disconnected,
+        }
+        if wireless && last_byte.elapsed() > WIRELESS_SILENCE {
+            return LinkEnd::Disconnected;
         }
         if !pipeline.identified() && opened.elapsed() > IDENTIFY_TIMEOUT {
             return LinkEnd::NotAReceiver;
@@ -216,12 +302,48 @@ mod tests {
 
     #[test]
     fn candidates_prefer_override_then_receiver_ids() {
-        let ports = vec![port("/dev/ttyS0", false), port("/dev/ttyACM0", true), port("/dev/ttyACM1", true)];
+        let ports = vec![
+            port("/dev/ttyS0", false),
+            port("/dev/ttyACM0", true),
+            port("/dev/ttyACM1", true),
+            port("tcp://10.0.0.7:5760", true),
+        ];
         let mut rejected = HashSet::new();
-        assert_eq!(candidates(&ports, None, &rejected), vec!["/dev/ttyACM0", "/dev/ttyACM1"]);
+        assert_eq!(
+            candidates(&ports, None, &rejected),
+            vec!["/dev/ttyACM0", "/dev/ttyACM1", "tcp://10.0.0.7:5760", discover::AP_ADDRESS]
+        );
         rejected.insert("/dev/ttyACM0".to_string());
-        assert_eq!(candidates(&ports, None, &rejected), vec!["/dev/ttyACM1"]);
+        rejected.insert(discover::AP_ADDRESS.to_string());
+        assert_eq!(candidates(&ports, None, &rejected), vec!["/dev/ttyACM1", "tcp://10.0.0.7:5760"]);
         assert_eq!(candidates(&ports, Some("COM7"), &rejected), vec!["COM7"]);
+    }
+
+    #[test]
+    fn network_link_ends_when_the_bridge_hangs_up() {
+        use std::io::Write;
+        use std::net::TcpListener;
+        use crate::adsb::tests::{payload, sample};
+        use crate::mavlink::tests::v1_frame;
+        use crate::pipeline::SharedRegistry;
+
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let name = format!("tcp://{}", listener.local_addr().unwrap());
+        let bridge = thread::spawn(move || {
+            let (mut sock, _) = listener.accept().unwrap();
+            sock.write_all(&v1_frame(0, 246, &payload(&sample()), 184)).unwrap();
+            // Dropping the socket closes the connection.
+        });
+        let stream = discover::connect(&name).unwrap();
+        stream.set_read_timeout(Some(READ_TIMEOUT)).unwrap();
+        let pipeline = Pipeline::new(None, false, SharedRegistry::default());
+        pipeline.start_link(&name);
+        let lookups: LookupSink = Arc::new(|_| {});
+        let outcome = read_loop(Link::Network(stream), &pipeline, &lookups, || false);
+        bridge.join().unwrap();
+        assert_eq!(outcome, LinkEnd::Disconnected);
+        assert!(pipeline.identified());
+        assert_eq!(pipeline.lock().receiver.status, ReceiverStatus::Connected);
     }
 
     #[test]

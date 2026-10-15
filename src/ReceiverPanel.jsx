@@ -15,7 +15,7 @@ export default function ReceiverPanel({ receiver, messages, aircraftCount, onClo
     <Sheet title="Receiver" icon={<AntennaIcon />} onClose={onClose}>
       {receiver.detail && <div className="sheet-error">{receiver.detail}</div>}
       {receiver.status === 'searching' && (
-        <p className="sheet-empty">Plug in the PingView receiver. It's detected automatically.</p>
+        <p className="sheet-empty">Plug in the PingView receiver, or switch on a Wi-Fi receiver on the same network (or join its PingView-xxxx network). It's detected automatically.</p>
       )}
       <SheetSection>
         <SheetRow label="Status">

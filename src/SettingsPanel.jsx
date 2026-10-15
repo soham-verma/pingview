@@ -69,8 +69,9 @@ export default function SettingsPanel({ settings, onSaved, onClose }) {
             )}
             {ports.map((p) => (
               <option key={p.name} value={p.name}>
-                {p.name.replace('/dev/', '')}
-                {p.likely_receiver ? ' (receiver)' : ''}
+                {p.name.startsWith('tcp://')
+                  ? `${p.description} (${p.name.slice('tcp://'.length)})`
+                  : p.name.replace('/dev/', '') + (p.likely_receiver ? ' (receiver)' : '')}
               </option>
             ))}
           </select>
