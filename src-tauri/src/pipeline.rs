@@ -11,7 +11,7 @@ use crate::assist::AreaAircraft;
 use crate::history::History;
 use crate::mavlink::{Frame, Framer};
 use crate::registry::Registry;
-use crate::store::{Aircraft, ReceiverInfo, ReceiverStatus, Store, STALE_SECS};
+use crate::store::{Aircraft, Battery, ReceiverInfo, ReceiverStatus, Store, STALE_SECS};
 
 /// System and component ID the pingRX Pro stamps on every frame.
 pub const PING_SYSID: u8 = 1;
@@ -128,6 +128,11 @@ impl Pipeline {
         s.receiver.port = port.map(str::to_string);
         s.receiver.detail = detail;
         s.receiver.msg_rate = 0.0;
+        s.receiver.battery = None;
+    }
+
+    pub fn set_battery(&self, battery: Option<Battery>) {
+        self.lock().receiver.battery = battery;
     }
 
     pub fn identified(&self) -> bool {
@@ -303,6 +308,23 @@ mod tests {
         assert_eq!(p.lock().receiver.status, ReceiverStatus::Connected);
         p.tick(NO_TRAFFIC_SECS + 1.0);
         assert_eq!(p.lock().receiver.status, ReceiverStatus::NoTraffic);
+    }
+
+    #[test]
+    fn battery_belongs_to_the_current_link() {
+        let p = Pipeline::new(None, false, SharedRegistry::default());
+        let battery = Battery { mv: 3910, percent: Some(68) };
+        p.start_link("ble://PingView-f7c4");
+        p.set_battery(Some(battery));
+        assert_eq!(p.tick(1.0)["receiver"]["battery"]["percent"], 68);
+
+        p.set_status(ReceiverStatus::Searching, None, None);
+        assert_eq!(p.lock().receiver.battery, None, "a lost link has no battery");
+
+        p.start_link("ble://PingView-f7c4");
+        p.set_battery(Some(battery));
+        p.start_link("/dev/ttyACM0");
+        assert_eq!(p.lock().receiver.battery, None, "a new link starts without one");
     }
 
     #[test]

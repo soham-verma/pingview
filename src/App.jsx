@@ -4,6 +4,7 @@ import { listen } from '@tauri-apps/api/event';
 import AircraftMap from './AircraftMap.jsx';
 import AircraftCard from './AircraftCard.jsx';
 import AircraftListPanel from './AircraftListPanel.jsx';
+import BatteryNotice from './BatteryNotice.jsx';
 import BottomDock from './BottomDock.jsx';
 import HistoryPanel from './HistoryPanel.jsx';
 import MapNotice from './MapNotice.jsx';
@@ -13,7 +14,7 @@ import RightRail from './MapControls.jsx';
 import SettingsPanel from './SettingsPanel.jsx';
 import StatusPill from './StatusPill.jsx';
 import { useAircraft } from './useAircraft.js';
-import { DEFAULT_UNITS, UnitsContext } from './units.js';
+import { DEFAULT_UNITS, UnitsContext, batteryState } from './units.js';
 import { DEFAULT_STYLE, isMapTilerStyle } from './tiles.js';
 import { useReferenceLocation } from './useReferenceLocation.js';
 
@@ -202,8 +203,13 @@ export default function App() {
             </button>
           </div>
         )}
-        {settings && !settings.local_only && panel !== 'settings' && panel !== 'map' && (
-          <MapNotice status={mapNotice} onOpenSettings={() => setPanel('settings')} />
+        {batteryState(receiver.battery) === 'critical' ? (
+          <BatteryNotice battery={receiver.battery} />
+        ) : (
+          settings &&
+          !settings.local_only &&
+          panel !== 'settings' &&
+          panel !== 'map' && <MapNotice status={mapNotice} onOpenSettings={() => setPanel('settings')} />
         )}
 
         {panel === 'map' && settings && (

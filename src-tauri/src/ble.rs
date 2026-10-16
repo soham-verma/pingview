@@ -8,18 +8,28 @@ use std::sync::mpsc::{self, Receiver, RecvTimeoutError};
 use std::sync::{Arc, Mutex, Once, OnceLock};
 use std::time::{Duration, Instant};
 
-use btleplug::api::{Central, CentralEvent, Manager as _, Peripheral as _, ScanFilter};
+use btleplug::api::{Central, CentralEvent, Characteristic, Manager as _, Peripheral as _, ScanFilter};
 use btleplug::platform::{Adapter, Manager, Peripheral, PeripheralId};
 use futures::StreamExt;
 use tokio::runtime::Runtime;
 use tokio::task::JoinHandle;
 use uuid::Uuid;
 
+use crate::store::Battery;
+
 /// Prefix for Bluetooth receivers wherever a serial port name would go.
 pub const SCHEME: &str = "ble://";
 const NAME_PREFIX: &str = "PingView-";
 const NUS_SERVICE: Uuid = Uuid::from_u128(0x6E400001_B5A3_F393_E0A9_E50E24DCCA9E);
 const NUS_TX: Uuid = Uuid::from_u128(0x6E400003_B5A3_F393_E0A9_E50E24DCCA9E);
+/// Standard Battery Level (%), served when the bridge has a battery divider.
+const BATTERY_LEVEL: Uuid = Uuid::from_u128(0x00002A19_0000_1000_8000_00805F9B34FB);
+/// The bridge's measured battery voltage, uint16 mV little-endian.
+const BATTERY_MV: Uuid = Uuid::from_u128(0xB536A774_8C8D_4422_8924_83BC6496632D);
+/// The bridge only notifies on change, so poll as well.
+const BATTERY_POLL: Duration = Duration::from_secs(10);
+/// Below any LiPo voltage: the divider is missing or miswired.
+const MIN_BATTERY_MV: u16 = 2500;
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 /// Forget a receiver this long after its last advert.
 const SEEN_FOR: Duration = Duration::from_secs(30);
@@ -108,6 +118,36 @@ pub struct BleLink {
     timeout: Duration,
     peripheral: Peripheral,
     reader: JoinHandle<()>,
+    battery: Arc<Mutex<Option<Battery>>>,
+    battery_poll: Option<JoinHandle<()>>,
+}
+
+/// A battery reading from the raw characteristic values, or `None` if the
+/// voltage is missing or too low to be a real cell.
+fn parse_battery(mv: &[u8], level: Option<&[u8]>) -> Option<Battery> {
+    let mv = u16::from_le_bytes(mv.get(..2)?.try_into().ok()?);
+    if mv < MIN_BATTERY_MV {
+        return None;
+    }
+    Some(Battery { mv, percent: level.and_then(|l| l.first().copied()) })
+}
+
+async fn poll_battery(
+    peripheral: Peripheral,
+    mv: Characteristic,
+    level: Option<Characteristic>,
+    out: Arc<Mutex<Option<Battery>>>,
+) {
+    loop {
+        if let Ok(mv) = peripheral.read(&mv).await {
+            let level = match &level {
+                Some(c) => peripheral.read(c).await.ok(),
+                None => None,
+            };
+            *out.lock().unwrap_or_else(|e| e.into_inner()) = parse_battery(&mv, level.as_deref());
+        }
+        tokio::time::sleep(BATTERY_POLL).await;
+    }
 }
 
 /// Connects to `ble://PingView-xxxx` and subscribes to its data.
@@ -122,7 +162,8 @@ pub fn connect(name: &str, read_timeout: Duration) -> io::Result<BleLink> {
         .map(|(id, _)| id.clone())
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, format!("{local_name} isn't in range")))?;
     let (tx, data) = mpsc::channel();
-    let (peripheral, reader) = ble
+    let battery = Arc::new(Mutex::new(None));
+    let (peripheral, reader, battery_poll) = ble
         .rt
         .block_on(async {
             let peripheral = ble.adapter.peripheral(&id).await?;
@@ -130,11 +171,14 @@ pub fn connect(name: &str, read_timeout: Duration) -> io::Result<BleLink> {
                 .await
                 .map_err(|_| btleplug::Error::TimedOut(CONNECT_TIMEOUT))??;
             peripheral.discover_services().await?;
-            let characteristic = peripheral
-                .characteristics()
-                .into_iter()
-                .find(|c| c.uuid == NUS_TX)
+            let characteristics = peripheral.characteristics();
+            let find = |uuid| characteristics.iter().find(|c| c.uuid == uuid).cloned();
+            let characteristic = find(NUS_TX)
                 .ok_or_else(|| btleplug::Error::Other("not a PingView receiver (no UART service)".into()))?;
+            // Older bridges, or ones without the divider, have no battery service.
+            let battery_poll = find(BATTERY_MV).map(|mv| {
+                ble.rt.spawn(poll_battery(peripheral.clone(), mv, find(BATTERY_LEVEL), battery.clone()))
+            });
             // Open the stream before subscribing so the first bytes aren't lost.
             let mut notifications = peripheral.notifications().await?;
             peripheral.subscribe(&characteristic).await?;
@@ -145,7 +189,7 @@ pub fn connect(name: &str, read_timeout: Duration) -> io::Result<BleLink> {
                     }
                 }
             });
-            Ok::<_, btleplug::Error>((peripheral, reader))
+            Ok::<_, btleplug::Error>((peripheral, reader, battery_poll))
         })
         .map_err(io::Error::other)?;
     Ok(BleLink {
@@ -154,7 +198,16 @@ pub fn connect(name: &str, read_timeout: Duration) -> io::Result<BleLink> {
         timeout: read_timeout,
         peripheral,
         reader,
+        battery,
+        battery_poll,
     })
+}
+
+impl BleLink {
+    /// Latest battery reading, if the bridge reports one.
+    pub fn battery(&self) -> Option<Battery> {
+        *self.battery.lock().unwrap_or_else(|e| e.into_inner())
+    }
 }
 
 impl Read for BleLink {
@@ -176,6 +229,9 @@ impl Read for BleLink {
 impl Drop for BleLink {
     fn drop(&mut self) {
         self.reader.abort();
+        if let Some(poll) = &self.battery_poll {
+            poll.abort();
+        }
         if let Some(ble) = ble() {
             let peripheral = self.peripheral.clone();
             // Free the receiver for the next connection (it serves one app).
@@ -189,6 +245,26 @@ impl Drop for BleLink {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn battery_from_voltage_and_level() {
+        let b = parse_battery(&3910u16.to_le_bytes(), Some(&[68]));
+        assert_eq!(b, Some(Battery { mv: 3910, percent: Some(68) }));
+    }
+
+    #[test]
+    fn battery_without_level_keeps_voltage() {
+        assert_eq!(parse_battery(&3910u16.to_le_bytes(), None), Some(Battery { mv: 3910, percent: None }));
+        assert_eq!(parse_battery(&3910u16.to_le_bytes(), Some(&[])), Some(Battery { mv: 3910, percent: None }));
+    }
+
+    #[test]
+    fn implausible_battery_voltage_is_ignored() {
+        // A floating or miswired divider reads well under any LiPo voltage.
+        assert_eq!(parse_battery(&705u16.to_le_bytes(), Some(&[0])), None);
+        assert_eq!(parse_battery(&[], Some(&[50])), None);
+        assert_eq!(parse_battery(&[0x10], None), None);
+    }
 
     /// Needs a powered bridge in range: `cargo test ble_smoke -- --ignored --nocapture`.
     #[test]
@@ -223,6 +299,7 @@ mod tests {
         let snap = pipeline.tick(0.0);
         println!("{total} bytes in 10 s; identified as a Ping: {}", pipeline.identified());
         println!("receiver: {}", snap["receiver"]);
+        println!("battery: {:?}", link.battery());
         println!("aircraft: {}", snap["aircraft"].as_array().map_or(0, Vec::len));
     }
 }

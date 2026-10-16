@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_UNITS,
   airportCodes,
+  batteryState,
+  fmtBattery,
   fmtAltimeter,
   fmtAltitude,
   fmtCoords,
@@ -62,5 +64,22 @@ describe('unit formatting', () => {
     expect(airportCodes(syd, u())).toEqual({ main: 'SYD', other: 'YSSY' });
     expect(airportCodes(syd, u({ designator: 'icao' }))).toEqual({ main: 'YSSY', other: 'SYD' });
     expect(airportCodes({ icao: 'YSCN', iata: null }, u())).toEqual({ main: 'YSCN', other: null });
+  });
+});
+
+describe('receiver battery', () => {
+  it('shows percent and voltage', () => {
+    expect(fmtBattery({ mv: 3914, percent: 68 })).toBe('68% · 3.91 V');
+    expect(fmtBattery({ mv: 3914, percent: null })).toBe('3.91 V');
+    expect(fmtBattery(null)).toBe('—');
+  });
+
+  it('grades the battery', () => {
+    expect(batteryState({ mv: 3914, percent: 68 })).toBe('ok');
+    expect(batteryState({ mv: 3700, percent: 19 })).toBe('low');
+    expect(batteryState({ mv: 3640, percent: 8 })).toBe('critical');
+    expect(batteryState({ mv: 3650, percent: null })).toBe('low');
+    expect(batteryState({ mv: 3550, percent: null })).toBe('critical');
+    expect(batteryState(null)).toBe(null);
   });
 });

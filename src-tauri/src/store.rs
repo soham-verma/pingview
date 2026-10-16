@@ -102,6 +102,14 @@ pub enum ReceiverStatus {
     Error,
 }
 
+/// Battery of a wireless receiver, as reported by the bridge.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub struct Battery {
+    pub mv: u16,
+    /// The bridge's estimate from voltage; `None` if it didn't send one.
+    pub percent: Option<u8>,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ReceiverInfo {
     pub status: ReceiverStatus,
@@ -111,6 +119,8 @@ pub struct ReceiverInfo {
     /// Message-246 reports per second over the last few seconds.
     pub msg_rate: f64,
     pub stats: FramerStats,
+    /// Only for receivers that report one (the Bluetooth bridge).
+    pub battery: Option<Battery>,
 }
 
 impl Default for ReceiverInfo {
@@ -121,6 +131,7 @@ impl Default for ReceiverInfo {
             detail: None,
             msg_rate: 0.0,
             stats: FramerStats::default(),
+            battery: None,
         }
     }
 }
@@ -414,7 +425,8 @@ mod tests {
                 "receiver": {
                     "status": "connected", "port": "/dev/ttyACM0", "detail": null,
                     "msg_rate": 0.0,
-                    "stats": { "verified": 0, "other_frames": 0, "crc_errors": 0 }
+                    "stats": { "verified": 0, "other_frames": 0, "crc_errors": 0 },
+                    "battery": null
                 },
                 "aircraft": [{
                     "hex": "7c6b2d", "flight": "RXA6681", "flight_assisted": false,
@@ -429,5 +441,15 @@ mod tests {
                 }]
             })
         );
+    }
+
+    #[test]
+    fn receiver_battery_serializes_voltage_and_percent() {
+        let info = ReceiverInfo {
+            battery: Some(Battery { mv: 3910, percent: Some(68) }),
+            ..Default::default()
+        };
+        let json = serde_json::to_value(&info).unwrap();
+        assert_eq!(json["battery"], serde_json::json!({ "mv": 3910, "percent": 68 }));
     }
 }

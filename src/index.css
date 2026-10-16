@@ -1365,6 +1365,25 @@ body {
   background: rgba(255, 255, 255, 0.12);
   color: #e5e7eb;
 }
+.battery-state {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--panel-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.battery-state.low,
+.sheet-value.battery-low {
+  color: #fcd34d;
+}
+.battery-state.critical,
+.sheet-value.battery-critical {
+  color: #fca5a5;
+}
+.battery-notice {
+  border-color: rgba(248, 113, 113, 0.6);
+  background: rgba(127, 29, 29, 0.85);
+}
 .switch:disabled {
   opacity: 0.4;
   cursor: default;

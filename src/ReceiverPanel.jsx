@@ -1,5 +1,6 @@
 import { Sheet, SheetRow, SheetSection } from './Sheet.jsx';
 import { AntennaIcon } from './Icons.jsx';
+import { batteryState, fmtBattery } from './units.js';
 
 const STATUS_TEXT = {
   searching: 'Not connected',
@@ -24,6 +25,13 @@ export default function ReceiverPanel({ receiver, messages, aircraftCount, onClo
         <SheetRow label="Port">
           <span className="sheet-value mono">{receiver.port ?? '—'}</span>
         </SheetRow>
+        {receiver.battery && (
+          <SheetRow label="Battery">
+            <span className={`sheet-value battery-${batteryState(receiver.battery)}`}>
+              {fmtBattery(receiver.battery)}
+            </span>
+          </SheetRow>
+        )}
         <SheetRow label="Aircraft">
           <span className="sheet-value">{aircraftCount}</span>
         </SheetRow>

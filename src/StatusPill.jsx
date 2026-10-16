@@ -1,3 +1,5 @@
+import { batteryState, fmtBattery } from './units.js';
+
 const PROBLEM_TEXT = {
   searching: 'No receiver',
   connecting: 'Connecting…',
@@ -18,10 +20,16 @@ const NET_TEXT = { offline: 'Offline', local_only: 'Local only' };
 
 export default function StatusPill({ receiver, count, net, onClick }) {
   const problem = PROBLEM_TEXT[receiver.status];
+  const { battery } = receiver;
   return (
     <button type="button" className="status-pill map-float" onClick={onClick} title="Receiver details">
       <span className={`status-dot ${DOT_CLASS[receiver.status] ?? 'disconnected'}`} />
       {problem ?? `${count} aircraft`}
+      {battery && (
+        <span className={`battery-state ${batteryState(battery)}`} title={`Receiver battery ${fmtBattery(battery)}`}>
+          {battery.percent != null ? `${battery.percent}%` : `${(battery.mv / 1000).toFixed(2)} V`}
+        </span>
+      )}
       {NET_TEXT[net] && (
         <span
           className={`net-state ${net}`}

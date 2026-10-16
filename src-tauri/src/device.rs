@@ -228,8 +228,16 @@ fn read_loop(
     let wireless = !matches!(link, Link::Serial(_));
     let opened = Instant::now();
     let mut last_byte = Instant::now();
+    let mut battery = None;
     let mut buf = [0u8; 1024];
     loop {
+        if let Link::Ble(ble) = &link {
+            let now = ble.battery();
+            if now != battery {
+                battery = now;
+                pipeline.set_battery(battery);
+            }
+        }
         match link.read(&mut buf) {
             // A closed TCP/BLE connection reads as 0 bytes; serial can too, harmlessly.
             Ok(0) if wireless => return LinkEnd::Disconnected,

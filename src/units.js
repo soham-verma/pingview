@@ -124,3 +124,22 @@ export function legendLabels(u) {
   if (u.altitude === 'm') return ['0', '4.6k', '9.1k', '15.2k m'];
   return ['0', '15k', '30k', '50k ft'];
 }
+
+// Wireless receiver battery, e.g. "68% · 3.91 V". The % is the bridge's
+// estimate from voltage; the voltage is what it measured.
+export function fmtBattery(battery) {
+  if (!battery) return '—';
+  const volts = `${(battery.mv / 1000).toFixed(2)} V`;
+  return battery.percent == null ? volts : `${battery.percent}% · ${volts}`;
+}
+
+// 'low' under 20% (~3.7 V); 'critical' under 10% (~3.6 V), where the
+// receiver's 3.3 V supply starts to sag. Nothing on the receiver stops it
+// draining the cell flat, so critical means switch it off. null if unknown.
+export function batteryState(battery) {
+  if (!battery) return null;
+  const { mv, percent } = battery;
+  if (percent != null ? percent < 10 : mv < 3600) return 'critical';
+  if (percent != null ? percent < 20 : mv < 3700) return 'low';
+  return 'ok';
+}
