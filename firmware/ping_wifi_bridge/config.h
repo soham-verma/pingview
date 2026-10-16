@@ -37,18 +37,17 @@
 // WPA2 needs at least 8 characters.
 #define AP_PASSWORD "pingview"
 
-// Battery divider (2 x 200k from BAT+ to GND, midpoint here). D1 = GPIO3.
-// GPIO2 (A0) is a strapping pin, so it isn't used. -1 if not fitted.
-#define BATTERY_ADC_PIN 3
+// Battery divider (2 x 200k-220k from BAT+ to GND, midpoint here). A0 = GPIO2,
+// as in Seeed's wiring guide. GPIO2 is a boot strapping pin and the divider
+// holds it near 2 V at power-up; if the board ever fails to start, move the
+// midpoint to D1 and set 3. -1 if not fitted.
+#define BATTERY_ADC_PIN 2
 // Below this (with the divider fitted), switch Ping off and sleep.
 #define BATTERY_CUTOFF_MV 3300
 
 // Enable pin of the Ping's 5 V boost converter, high = on. -1 if the boost
 // has no enable pin (then low-battery cutoff can't stop the Ping's draw).
 #define PING_POWER_PIN -1
-
-// Optional activity LED (the XIAO has no user LED). -1 if not fitted.
-#define LED_PIN -1
 
 // BOOT button: hold for 3 s while running to forget Wi-Fi.
 #define BOOT_BUTTON_PIN 9

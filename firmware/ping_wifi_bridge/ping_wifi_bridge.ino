@@ -40,6 +40,14 @@ volatile bool bleConnected = false;
 volatile uint16_t bleConnHandle = 0;
 int batteryMv = -1;
 
+// Standard Battery Service (level in %), plus the measured voltage in mV
+// (uint16 little-endian) since the % is only an estimate from voltage.
+#define BATTERY_SERVICE "180F"
+#define BATTERY_LEVEL "2A19"
+#define BATTERY_MV "B536A774-8C8D-4422-8924-83BC6496632D"
+BLECharacteristic *bleBatteryLevel = nullptr;
+BLECharacteristic *bleBatteryMv = nullptr;
+
 // Ping bytes are batched so a burst goes out as one TCP segment.
 uint8_t pending[512];
 size_t pendingLen = 0;
@@ -160,6 +168,15 @@ void startBle() {
   rx->setCallbacks(new BleRxEvents());
   service->start();
 
+  if (BATTERY_ADC_PIN >= 0) {
+    BLEService *battery = bleServer->createService(BATTERY_SERVICE);
+    bleBatteryLevel = battery->createCharacteristic(
+        BATTERY_LEVEL, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    bleBatteryMv = battery->createCharacteristic(
+        BATTERY_MV, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    battery->start();
+  }
+
   // The 128-bit UUID and the name don't both fit in one 31-byte advert, so
   // the name goes in the scan response.
   BLEAdvertising *adv = BLEDevice::getAdvertising();
@@ -227,7 +244,6 @@ void pumpPingToClients() {
   }
   if (pendingLen == sizeof(pending) || (pendingLen > 0 && millis() - pendingSince >= FLUSH_MS)) {
     flushToClients();
-    if (LED_PIN >= 0) digitalWrite(LED_PIN, !digitalRead(LED_PIN));
   }
 }
 
@@ -251,6 +267,37 @@ void pumpClientsToPing() {
 
 // ---------------------------------------------------------------- Battery
 
+// Rough single-cell LiPo state of charge under light load. Voltage is flat
+// through the middle of the curve, so treat the % as an estimate.
+uint8_t batteryPercent(int mv) {
+  static const int16_t curve[][2] = {{4200, 100}, {4100, 90}, {4000, 80}, {3920, 70}, {3870, 60}, {3830, 50},
+                                     {3790, 40},  {3750, 30}, {3710, 20}, {3670, 10}, {3600, 5},  {3300, 0}};
+  const int n = sizeof(curve) / sizeof(curve[0]);
+  if (mv >= curve[0][0]) return 100;
+  for (int i = 1; i < n; i++) {
+    if (mv >= curve[i][0]) {
+      return curve[i][1] + (mv - curve[i][0]) * (curve[i - 1][1] - curve[i][1]) / (curve[i - 1][0] - curve[i][0]);
+    }
+  }
+  return 0;
+}
+
+// The mV characteristic carries the raw divider reading, so a missing or
+// miswired divider shows up as a low number rather than silence. The level
+// is only published for a plausible battery voltage.
+void publishBattery(int measuredMv) {
+  static int lastMv = -1;
+  if (!bleBatteryMv || measuredMv == lastMv) return;
+  lastMv = measuredMv;
+  uint8_t mv[2] = {(uint8_t)(measuredMv & 0xFF), (uint8_t)(measuredMv >> 8)};
+  bleBatteryMv->setValue(mv, 2);
+  if (bleConnected) bleBatteryMv->notify();
+  if (batteryMv < 0) return;
+  uint8_t pct = batteryPercent(batteryMv);
+  bleBatteryLevel->setValue(&pct, 1);
+  if (bleConnected) bleBatteryLevel->notify();
+}
+
 void readBattery() {
   static uint32_t lastRead = 0, lowSince = 0;
   if (BATTERY_ADC_PIN < 0 || (lastRead != 0 && millis() - lastRead < 2000)) return;
@@ -259,6 +306,7 @@ void readBattery() {
   for (int i = 0; i < 16; i++) sum += analogReadMilliVolts(BATTERY_ADC_PIN);
   int mv = 2 * sum / 16;
   batteryMv = mv > 2500 ? mv : -1;  // nothing on the divider
+  publishBattery(mv);
   if (batteryMv < 0 || batteryMv >= BATTERY_CUTOFF_MV) {
     lowSince = 0;
     return;
@@ -375,7 +423,6 @@ void setup() {
   Serial.begin(115200);    // USB CDC; host baud is ignored
   Serial.setTxTimeoutMs(0);  // never stall the bridge when no USB host
   pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP);
-  if (LED_PIN >= 0) pinMode(LED_PIN, OUTPUT);
   if (PING_POWER_PIN >= 0) {
     pinMode(PING_POWER_PIN, OUTPUT);
     digitalWrite(PING_POWER_PIN, HIGH);

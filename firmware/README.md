@@ -18,9 +18,8 @@ Two bridges, both pass the pingRX Pro's MAVLink through unchanged:
 | Ping VCC | 5 V boost output | The Ping needs 4–6 V, a LiPo gives 3.0–4.2 V |
 | LiPo + | power switch → XIAO **BAT+** pad (underside) and boost input | |
 | LiPo − | XIAO **BAT−** pad and boost GND | |
-| Battery sense (optional) | 200 kΩ from BAT+ (after the switch) to **D1**, 200 kΩ from D1 to GND | Shows battery voltage on the status page |
+| Battery sense (optional) | 220 kΩ from BAT+ (after the switch) to **A0**, 220 kΩ from A0 to GND (Seeed's layout) | Battery voltage and % over Bluetooth (Battery Service) and on the status page. A0 is a boot strapping pin: if the board ever fails to start, move the midpoint to **D1** and set `BATTERY_ADC_PIN 3` |
 | Boost enable (optional) | **D2** (GPIO4), set `PING_POWER_PIN 4` | Lets the low-battery cutoff switch the Ping off |
-
 ```
 LiPo+ ──switch──┬── XIAO BAT+      (charges from the XIAO's USB-C, 380 mA,
                 │                   only while the switch is on)
@@ -47,6 +46,11 @@ uses the standard Nordic UART Service, so nRF Connect or similar can read it
 too. BLE apps can't write to the Ping unless `BLE_ALLOW_WRITES` is set in
 `config.h` (there's no pairing). On macOS, allow PingView under System
 Settings → Privacy & Security → Bluetooth.
+
+With the battery divider fitted it also serves the standard Battery Service
+(`180F`, level in %, estimated from voltage) and the measured battery voltage
+in mV (uint16 little-endian) on characteristic
+`B536A774-8C8D-4422-8924-83BC6496632D`.
 
 PingView tries USB first, then Bluetooth, then Wi-Fi.
 
