@@ -1,7 +1,7 @@
 {
   "name": "pingview",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Desktop ADS-B map for a uAvionix pingRX Pro over a USB bridge.",
   "type": "module",
   "license": "MIT",
