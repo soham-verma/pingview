@@ -1,5 +1,5 @@
-//! Finds the receiver (USB serial, or a Bluetooth LE / Wi-Fi bridge), keeps it
-//! connected, and feeds its bytes into the pipeline. Also hosts replay mode
+//! Finds the receiver (a USB bridge or ADSBee, or a Bluetooth LE / Wi-Fi
+//! bridge), keeps it connected, and feeds its bytes into the pipeline. Also hosts replay mode
 //! (`PINGVIEW_REPLAY=<capture file>`).
 
 use std::collections::HashSet;
@@ -12,11 +12,12 @@ use std::time::{Duration, Instant};
 use chrono::Utc;
 use serialport::{SerialPortType, UsbPortInfo};
 
+use crate::adsbee::{self, Session};
 use crate::ble::{self, BleLink};
 use crate::discover;
 use crate::pipeline::Pipeline;
 use crate::settings::Settings;
-use crate::store::ReceiverStatus;
+use crate::store::{Model, ReceiverStatus};
 
 /// USB IDs of the bridges: ST's generic CDC Virtual COM Port (Black Pill)
 /// and the ESP32-C3's built-in USB Serial/JTAG (XIAO ESP32-C3).
@@ -38,6 +39,9 @@ pub struct PortInfo {
     pub name: String,
     pub description: String,
     pub likely_receiver: bool,
+    /// Could be an ADSBee 1090, which needs its output switching on.
+    #[serde(skip)]
+    pub adsbee: bool,
 }
 
 fn is_receiver(usb: &UsbPortInfo) -> bool {
@@ -58,19 +62,24 @@ pub fn list_ports() -> Vec<PortInfo> {
         .into_iter()
         .filter(|p| usable_name(&p.port_name))
         .map(|p| {
-            let (description, likely_receiver) = match &p.port_type {
-                SerialPortType::UsbPort(usb) => (
-                    usb.product.clone().unwrap_or_else(|| "USB serial".into()),
-                    is_receiver(usb),
-                ),
-                SerialPortType::BluetoothPort => ("Bluetooth".into(), false),
-                SerialPortType::PciPort => ("PCI".into(), false),
-                SerialPortType::Unknown => ("Serial".into(), false),
+            let (description, likely_receiver, adsbee) = match &p.port_type {
+                SerialPortType::UsbPort(usb) => {
+                    let adsbee = adsbee::is_adsbee(usb);
+                    (
+                        usb.product.clone().unwrap_or_else(|| "USB serial".into()),
+                        is_receiver(usb) || adsbee,
+                        adsbee,
+                    )
+                }
+                SerialPortType::BluetoothPort => ("Bluetooth".into(), false, false),
+                SerialPortType::PciPort => ("PCI".into(), false, false),
+                SerialPortType::Unknown => ("Serial".into(), false, false),
             };
             PortInfo {
                 name: p.port_name,
                 description,
                 likely_receiver,
+                adsbee,
             }
         })
         .collect();
@@ -78,6 +87,7 @@ pub fn list_ports() -> Vec<PortInfo> {
         description: "Bluetooth receiver".into(),
         name,
         likely_receiver: true,
+        adsbee: false,
     }));
     list.extend(discover::receivers().into_iter().map(|r| PortInfo {
         description: match r.id {
@@ -86,6 +96,7 @@ pub fn list_ports() -> Vec<PortInfo> {
         },
         name: r.address,
         likely_receiver: true,
+        adsbee: false,
     }));
     list
 }
@@ -140,6 +151,7 @@ pub fn spawn_receiver(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, l
             }
             let mut tried_any = false;
             for name in names {
+                let is_adsbee = ports.iter().any(|p| p.name == name && p.adsbee);
                 let opened = if ble::is_ble(&name) {
                     match ble::connect(&name, READ_TIMEOUT) {
                         Ok(link) => Ok(Link::Ble(link)),
@@ -161,6 +173,10 @@ pub fn spawn_receiver(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, l
                 } else {
                     serialport::new(&name, BAUD)
                         .timeout(READ_TIMEOUT)
+                        // The ADSBee only sends while DTR is up, and Windows
+                        // opens with it down. Left alone for the bridges: DTR
+                        // changes can reset the XIAO's ESP32-C3.
+                        .dtr_on_open(is_adsbee)
                         .open()
                         .map(Link::Serial)
                         .map_err(|e| open_error_detail(&e))
@@ -168,8 +184,20 @@ pub fn spawn_receiver(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, l
                 tried_any = true;
                 match opened {
                     Ok(link) => {
-                        pipeline.start_link(&name);
-                        let outcome = read_loop(link, &pipeline, &lookups, || {
+                        let session = match &link {
+                            Link::Serial(port) if is_adsbee => match start_adsbee(port.as_ref()) {
+                                Ok(session) => Some(session),
+                                Err(e) => {
+                                    let detail = format!("Couldn't talk to the ADSBee: {e}");
+                                    pipeline.set_status(ReceiverStatus::Error, Some(&name), Some(detail));
+                                    continue;
+                                }
+                            },
+                            _ => None,
+                        };
+                        let model = if session.is_some() { Model::Adsbee } else { Model::PingRx };
+                        pipeline.start_link(&name, model);
+                        let outcome = read_loop(link, session, &pipeline, &lookups, || {
                             settings.lock().unwrap().port != override_port
                         });
                         if outcome == LinkEnd::NotAReceiver && override_port.is_none() {
@@ -179,7 +207,7 @@ pub fn spawn_receiver(pipeline: Arc<Pipeline>, settings: Arc<Mutex<Settings>>, l
                             pipeline.set_status(
                                 ReceiverStatus::Error,
                                 Some(&name),
-                                Some("This port isn't sending pingRX data.".into()),
+                                Some("This port isn't sending receiver data.".into()),
                             );
                         }
                     }
@@ -219,8 +247,16 @@ impl Read for Link {
     }
 }
 
-fn read_loop(
+/// Switches an ADSBee's output on; its settings are put back when the
+/// session drops, or at exit if the app quits first.
+fn start_adsbee(port: &dyn serialport::SerialPort) -> serialport::Result<Session<Box<dyn serialport::SerialPort>>> {
+    let session = Session::start(port.try_clone()?, Instant::now())?;
+    Ok(session.restore_on_exit_via(Box::new(port.try_clone()?)))
+}
+
+fn read_loop<W: io::Write>(
     mut link: Link,
+    mut adsbee: Option<Session<W>>,
     pipeline: &Pipeline,
     lookups: &LookupSink,
     settings_changed: impl Fn() -> bool,
@@ -245,10 +281,16 @@ fn read_loop(
             Ok(n) => {
                 last_byte = Instant::now();
                 feed(pipeline, lookups, &buf[..n]);
+                if let Some(page) = adsbee.as_mut().and_then(|s| s.feed(&buf[..n])) {
+                    pipeline.set_settings_page(Some(page));
+                }
             }
             // Read timeouts are TimedOut on Windows, WouldBlock on Unix sockets.
             Err(e) if matches!(e.kind(), io::ErrorKind::TimedOut | io::ErrorKind::WouldBlock) => {}
             Err(_) => return LinkEnd::Disconnected,
+        }
+        if let Some(session) = adsbee.as_mut() {
+            session.poll(Instant::now());
         }
         if wireless && last_byte.elapsed() > WIRELESS_SILENCE {
             return LinkEnd::Disconnected;
@@ -287,7 +329,7 @@ pub fn spawn_replay(pipeline: Arc<Pipeline>, file: PathBuf, lookups: LookupSink)
         let chunk = 64;
         let pause = Duration::from_secs_f64(chunk as f64 / (BAUD as f64 / 10.0));
         loop {
-            pipeline.start_link(&label);
+            pipeline.start_link(&label, Model::PingRx);
             for part in data.chunks(chunk) {
                 feed(&pipeline, &lookups, part);
                 thread::sleep(pause);
@@ -305,6 +347,7 @@ mod tests {
             name: name.into(),
             description: String::new(),
             likely_receiver: likely,
+            adsbee: false,
         }
     }
 
@@ -345,13 +388,63 @@ mod tests {
         let stream = discover::connect(&name).unwrap();
         stream.set_read_timeout(Some(READ_TIMEOUT)).unwrap();
         let pipeline = Pipeline::new(None, false, SharedRegistry::default());
-        pipeline.start_link(&name);
+        pipeline.start_link(&name, Model::PingRx);
         let lookups: LookupSink = Arc::new(|_| {});
-        let outcome = read_loop(Link::Network(stream), &pipeline, &lookups, || false);
+        let outcome = read_loop::<io::Sink>(Link::Network(stream), None, &pipeline, &lookups, || false);
         bridge.join().unwrap();
         assert_eq!(outcome, LinkEnd::Disconnected);
         assert!(pipeline.identified());
         assert_eq!(pipeline.lock().receiver.status, ReceiverStatus::Connected);
+    }
+
+/// Needs an ADSBee 1090 plugged in: `cargo test adsbee_smoke -- --ignored --nocapture`.
+    #[test]
+    #[ignore]
+    fn adsbee_smoke() {
+        use crate::pipeline::SharedRegistry;
+        use std::io::Write;
+
+        let ask_protocol = |name: &str| -> String {
+            let mut port = serialport::new(name, BAUD).timeout(READ_TIMEOUT).dtr_on_open(true).open().unwrap();
+            port.write_all(b"AT+PROTOCOL_OUT?\r\n").unwrap();
+            let mut text = Vec::new();
+            let mut buf = [0u8; 512];
+            let until = Instant::now() + Duration::from_secs(2);
+            while Instant::now() < until {
+                if let Ok(n) = port.read(&mut buf) {
+                    text.extend_from_slice(&buf[..n]);
+                }
+            }
+            let text = String::from_utf8_lossy(&text);
+            text.lines().find(|l| l.contains("PROTOCOL_OUT=CONSOLE,")).unwrap_or("").trim().to_string()
+        };
+
+        let ports = list_ports();
+        let found = ports.iter().find(|p| p.adsbee).expect("no ADSBee plugged in");
+        assert!(found.likely_receiver);
+        let name = found.name.clone();
+        println!("found {name} ({})", found.description);
+        let before = ask_protocol(&name);
+        println!("before: {before}");
+
+        let port = serialport::new(&name, BAUD).timeout(READ_TIMEOUT).dtr_on_open(true).open().unwrap();
+        let session = start_adsbee(port.as_ref()).unwrap();
+        let pipeline = Pipeline::new(None, false, SharedRegistry::default());
+        pipeline.start_link(&name, Model::Adsbee);
+        let lookups: LookupSink = Arc::new(|_| {});
+        let stop_at = Instant::now() + Duration::from_secs(12);
+        let outcome = read_loop(Link::Serial(port), Some(session), &pipeline, &lookups, || Instant::now() > stop_at);
+        let snap = pipeline.tick(Utc::now().timestamp() as f64);
+        println!("outcome {outcome:?}, identified {}", pipeline.identified());
+        println!("receiver: {}", snap["receiver"]);
+        println!("aircraft: {}", snap["aircraft"].as_array().map_or(0, Vec::len));
+        assert_eq!(outcome, LinkEnd::SettingsChanged);
+        assert!(pipeline.identified());
+        assert!(!snap["receiver"]["settings_page"].is_null(), "no settings page found");
+
+        let after = ask_protocol(&name);
+        println!("after: {after}");
+        assert_eq!(after, before, "console output wasn't put back");
     }
 
     #[test]

@@ -282,7 +282,7 @@ mod tests {
         let mut link = connect(&name, Duration::from_millis(200)).expect("connect");
         println!("connected and subscribed");
         let pipeline = crate::pipeline::Pipeline::new(None, false, Default::default());
-        pipeline.start_link(&name);
+        pipeline.start_link(&name, crate::store::Model::PingRx);
         let mut buf = [0u8; 256];
         let mut total = 0;
         let until = Instant::now() + Duration::from_secs(10);

@@ -1,4 +1,5 @@
 mod adsb;
+mod adsbee;
 mod basemap;
 mod ble;
 mod assist;
@@ -497,6 +498,11 @@ pub fn run() {
             history_save,
             history_open_folder,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running PingView");
+        .build(tauri::generate_context!())
+        .expect("error while building PingView")
+        .run(|_, event| {
+            if let tauri::RunEvent::Exit = event {
+                adsbee::restore_on_exit();
+            }
+        });
 }

@@ -8,6 +8,7 @@ use std::collections::{HashMap, VecDeque};
 use serde::Serialize;
 
 use crate::adsb::TrafficReport;
+use crate::adsbee::SettingsPage;
 use crate::country;
 use crate::mavlink::FramerStats;
 use crate::registry::RegistryEntry;
@@ -102,6 +103,16 @@ pub enum ReceiverStatus {
     Error,
 }
 
+/// Which kind of receiver a link is to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub enum Model {
+    /// A pingRX Pro behind a PingView bridge (USB, Bluetooth or Wi-Fi).
+    #[serde(rename = "pingRX")]
+    PingRx,
+    #[serde(rename = "ADSBee 1090")]
+    Adsbee,
+}
+
 /// Battery of a wireless receiver, as reported by the bridge.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct Battery {
@@ -121,6 +132,10 @@ pub struct ReceiverInfo {
     pub stats: FramerStats,
     /// Only for receivers that report one (the Bluetooth bridge).
     pub battery: Option<Battery>,
+    /// What's on the other end of the current link.
+    pub model: Option<Model>,
+    /// Where the receiver's own settings page is (ADSBee only).
+    pub settings_page: Option<SettingsPage>,
 }
 
 impl Default for ReceiverInfo {
@@ -132,6 +147,8 @@ impl Default for ReceiverInfo {
             msg_rate: 0.0,
             stats: FramerStats::default(),
             battery: None,
+            model: None,
+            settings_page: None,
         }
     }
 }
@@ -426,7 +443,7 @@ mod tests {
                     "status": "connected", "port": "/dev/ttyACM0", "detail": null,
                     "msg_rate": 0.0,
                     "stats": { "verified": 0, "other_frames": 0, "crc_errors": 0 },
-                    "battery": null
+                    "battery": null, "model": null, "settings_page": null
                 },
                 "aircraft": [{
                     "hex": "7c6b2d", "flight": "RXA6681", "flight_assisted": false,

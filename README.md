@@ -31,6 +31,18 @@ pingRX Pro ──UART 57600──► XIAO ESP32-C3 ──Bluetooth LE, Wi-Fi (TC
 
 Wiring, power and flashing for both bridges: see [`firmware/README.md`](firmware/README.md).
 
+### ADSBee 1090
+
+An [ADSBee 1090](https://github.com/CoolNamesAllTaken/adsbee) works too,
+plugged straight in by USB with its stock firmware, with no bridge or setup
+needed. When it connects, PingView switches the ADSBee's USB output to
+MAVLink 2 without saving that, and puts it back as it was when PingView
+disconnects or quits. Settings you've saved on the ADSBee aren't touched.
+
+**Receiver** shows which receiver is connected. For an ADSBee it also has
+a link to the ADSBee's settings page: its address on your network, or, if
+it's only running its own hotspot, the hotspot's name and password.
+
 ## Install
 
 Download the installer for your OS from

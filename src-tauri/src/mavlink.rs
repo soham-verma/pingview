@@ -15,9 +15,16 @@ const CRC_LEN: usize = 2;
 const V2_SIGNATURE_LEN: usize = 13;
 const V2_FLAG_SIGNED: u8 = 0x01;
 
+pub const MSG_ID_HEARTBEAT: u32 = 0;
+const HEARTBEAT_CRC_EXTRA: u8 = 50;
+/// HEARTBEAT `type` of an ADS-B receiver (MAV_TYPE_ADSB).
+pub const MAV_TYPE_ADSB: u8 = 27;
+const HEARTBEAT_TYPE_OFFSET: usize = 4;
+
 /// CRC extra byte for each message ID PingView can verify.
 pub fn crc_extra(msgid: u32) -> Option<u8> {
     match msgid {
+        MSG_ID_HEARTBEAT => Some(HEARTBEAT_CRC_EXTRA),
         crate::adsb::MSG_ID_ADSB_VEHICLE => Some(crate::adsb::CRC_EXTRA),
         _ => None,
     }
@@ -45,6 +52,17 @@ pub struct Frame {
     /// True when the checksum was checked and matched; false when the
     /// message ID is unknown, so only its framing was checked.
     pub verified: bool,
+}
+
+impl Frame {
+    /// A checksummed HEARTBEAT from an ADS-B receiver (the ADSBee sends one
+    /// every reporting round, traffic or not).
+    pub fn is_adsb_heartbeat(&self) -> bool {
+        // MAVLink 2 trims trailing zero bytes, so a short payload reads as zeros.
+        self.verified
+            && self.msgid == MSG_ID_HEARTBEAT
+            && self.payload.get(HEARTBEAT_TYPE_OFFSET) == Some(&MAV_TYPE_ADSB)
+    }
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, serde::Serialize)]
@@ -175,7 +193,12 @@ pub(crate) mod tests {
     }
 
     fn v2_frame(msgid: u32, payload: &[u8], extra: u8) -> Vec<u8> {
-        let mut f = vec![STX_V2, payload.len() as u8, 0, 0, 7, 1, 0x9C];
+        v2_frame_from(1, 0x9C, msgid, payload, extra)
+    }
+
+    /// Builds a valid v2 frame from any system/component.
+    pub fn v2_frame_from(sysid: u8, compid: u8, msgid: u32, payload: &[u8], extra: u8) -> Vec<u8> {
+        let mut f = vec![STX_V2, payload.len() as u8, 0, 0, 7, sysid, compid];
         f.extend_from_slice(&msgid.to_le_bytes()[..3]);
         f.extend_from_slice(payload);
         let crc = x25_crc(&f[1..], extra);

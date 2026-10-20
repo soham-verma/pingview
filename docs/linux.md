@@ -8,7 +8,9 @@ shows "Permission denied", do one of these once:
 **Option 1: udev rule (recommended)**
 
 ```sh
-echo 'SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", TAG+="uaccess"' \
+printf '%s\n' \
+  'SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", TAG+="uaccess"' \
+  'SUBSYSTEM=="tty", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="000a", TAG+="uaccess"' \
   | sudo tee /etc/udev/rules.d/60-pingview.rules
 sudo udevadm control --reload-rules
 ```
@@ -23,6 +25,7 @@ sudo usermod -aG dialout "$USER"
 
 Then log out and back in.
 
-Note: `0483:5740` is ST's generic USB serial ID, so the rule also covers
-other STM32 USB-serial boards. PingView still checks a port's data before
+Note: `0483:5740` is ST's generic USB serial ID and `2e8a:000a` (the
+ADSBee 1090) is the Raspberry Pi Pico's, so the rule also covers other
+STM32 and Pico USB-serial boards. PingView still checks a port's data before
 using it.

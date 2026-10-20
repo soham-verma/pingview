@@ -7,11 +7,12 @@ use std::sync::{Arc, Mutex, OnceLock};
 use chrono::{DateTime, Utc};
 
 use crate::adsb::{decode_adsb_vehicle, MSG_ID_ADSB_VEHICLE};
+use crate::adsbee::SettingsPage;
 use crate::assist::AreaAircraft;
 use crate::history::History;
 use crate::mavlink::{Frame, Framer};
 use crate::registry::Registry;
-use crate::store::{Aircraft, Battery, ReceiverInfo, ReceiverStatus, Store, STALE_SECS};
+use crate::store::{Aircraft, Battery, Model, ReceiverInfo, ReceiverStatus, Store, STALE_SECS};
 
 /// System and component ID the pingRX Pro stamps on every frame.
 pub const PING_SYSID: u8 = 1;
@@ -24,7 +25,8 @@ const RATE_WINDOW_SECS: f64 = 5.0;
 /// Ask the network again after this long if it had no callsign either.
 const ASSIST_RETRY_SECS: f64 = 120.0;
 
-/// Decides whether a serial port is really a Ping (see spec, Device).
+/// Decides whether a port is really a receiver: a Ping (see spec, Device)
+/// or anything sending ADS-B heartbeats, like the ADSBee.
 #[derive(Default)]
 pub struct Identifier {
     run: u32,
@@ -36,7 +38,7 @@ impl Identifier {
         if self.confirmed {
             return true;
         }
-        if frame.verified && frame.msgid == MSG_ID_ADSB_VEHICLE {
+        if (frame.verified && frame.msgid == MSG_ID_ADSB_VEHICLE) || frame.is_adsb_heartbeat() {
             self.confirmed = true;
         } else if frame.sysid == PING_SYSID && frame.compid == PING_COMPID {
             self.run += 1;
@@ -110,7 +112,7 @@ impl Pipeline {
     }
 
     /// A port was just opened: start framing from scratch.
-    pub fn start_link(&self, port: &str) {
+    pub fn start_link(&self, port: &str, model: Model) {
         let mut s = self.lock();
         s.framer = Framer::new();
         s.identifier = Identifier::default();
@@ -118,6 +120,7 @@ impl Pipeline {
         s.receiver = ReceiverInfo {
             status: ReceiverStatus::Connecting,
             port: Some(port.to_string()),
+            model: Some(model),
             ..Default::default()
         };
     }
@@ -129,6 +132,12 @@ impl Pipeline {
         s.receiver.detail = detail;
         s.receiver.msg_rate = 0.0;
         s.receiver.battery = None;
+        s.receiver.model = None;
+        s.receiver.settings_page = None;
+    }
+
+    pub fn set_settings_page(&self, page: Option<SettingsPage>) {
+        self.lock().receiver.settings_page = page;
     }
 
     pub fn set_battery(&self, battery: Option<Battery>) {
@@ -264,7 +273,7 @@ impl Pipeline {
 mod tests {
     use super::*;
     use crate::adsb::tests::{payload, sample};
-    use crate::mavlink::tests::v1_frame;
+    use crate::mavlink::tests::{v1_frame, v2_frame_from};
 
     const FIXTURE: &[u8] = include_bytes!("../tests/fixtures/capture-2026-10-13.bin");
 
@@ -275,7 +284,7 @@ mod tests {
     #[test]
     fn identifies_ping_from_one_traffic_report() {
         let p = Pipeline::new(None, false, SharedRegistry::default());
-        p.start_link("test");
+        p.start_link("test", Model::PingRx);
         p.ingest(&v1_frame(0, 246, &payload(&sample()), 184), 0.0, now_utc());
         assert!(p.identified());
         assert_eq!(p.lock().receiver.status, ReceiverStatus::Connected);
@@ -284,17 +293,56 @@ mod tests {
     #[test]
     fn identifies_idle_ping_from_status_frames() {
         let p = Pipeline::new(None, false, SharedRegistry::default());
-        p.start_link("test");
+        p.start_link("test", Model::PingRx);
         let status: Vec<u8> = (0..4).flat_map(|i| v1_frame(i, 203, &[0], 0)).collect();
         p.ingest(&status, 0.0, now_utc());
         assert!(p.identified());
         assert_eq!(p.lock().receiver.status, ReceiverStatus::NoTraffic);
     }
 
+    /// MAVLink HEARTBEAT payload: custom_mode, type, autopilot, base_mode,
+    /// system_status, mavlink_version.
+    fn heartbeat(mav_type: u8) -> Vec<u8> {
+        vec![0, 0, 0, 0, mav_type, 8, 0, 4, 3]
+    }
+
+    #[test]
+    fn identifies_idle_adsbee_from_its_heartbeat() {
+        let p = Pipeline::new(None, false, SharedRegistry::default());
+        p.start_link("/dev/cu.usbmodem1101", Model::Adsbee);
+        p.ingest(&v2_frame_from(1, 1, 0, &heartbeat(27), 50), 0.0, now_utc());
+        assert!(p.identified());
+        assert_eq!(p.lock().receiver.status, ReceiverStatus::NoTraffic);
+    }
+
+    #[test]
+    fn other_mavlink_heartbeats_are_not_identified() {
+        let p = Pipeline::new(None, false, SharedRegistry::default());
+        p.start_link("test", Model::Adsbee);
+        let quadcopter: Vec<u8> = (0..4).flat_map(|_| v2_frame_from(1, 1, 0, &heartbeat(2), 50)).collect();
+        p.ingest(&quadcopter, 0.0, now_utc());
+        assert!(!p.identified());
+    }
+
+    #[test]
+    fn snapshot_names_the_receiver_and_its_settings_page() {
+        let p = Pipeline::new(None, false, SharedRegistry::default());
+        p.start_link("/dev/cu.usbmodem1101", Model::Adsbee);
+        p.set_settings_page(Some(SettingsPage::Url { url: "http://192.168.1.42/".into() }));
+        let snap = p.tick(1.0);
+        assert_eq!(snap["receiver"]["model"], "ADSBee 1090");
+        assert_eq!(snap["receiver"]["settings_page"]["url"], "http://192.168.1.42/");
+
+        p.start_link("ble://PingView-f7c4", Model::PingRx);
+        let snap = p.tick(2.0);
+        assert_eq!(snap["receiver"]["model"], "pingRX");
+        assert!(snap["receiver"]["settings_page"].is_null(), "a new link starts without one");
+    }
+
     #[test]
     fn other_devices_are_not_identified() {
         let p = Pipeline::new(None, false, SharedRegistry::default());
-        p.start_link("test");
+        p.start_link("test", Model::PingRx);
         p.ingest(b"hello from some other STM32 board\r\n".repeat(20).as_slice(), 0.0, now_utc());
         assert!(!p.identified());
     }
@@ -302,7 +350,7 @@ mod tests {
     #[test]
     fn status_drops_to_no_traffic_after_a_quiet_minute() {
         let p = Pipeline::new(None, false, SharedRegistry::default());
-        p.start_link("test");
+        p.start_link("test", Model::PingRx);
         p.ingest(&v1_frame(0, 246, &payload(&sample()), 184), 0.0, now_utc());
         p.tick(1.0);
         assert_eq!(p.lock().receiver.status, ReceiverStatus::Connected);
@@ -314,23 +362,23 @@ mod tests {
     fn battery_belongs_to_the_current_link() {
         let p = Pipeline::new(None, false, SharedRegistry::default());
         let battery = Battery { mv: 3910, percent: Some(68) };
-        p.start_link("ble://PingView-f7c4");
+        p.start_link("ble://PingView-f7c4", Model::PingRx);
         p.set_battery(Some(battery));
         assert_eq!(p.tick(1.0)["receiver"]["battery"]["percent"], 68);
 
         p.set_status(ReceiverStatus::Searching, None, None);
         assert_eq!(p.lock().receiver.battery, None, "a lost link has no battery");
 
-        p.start_link("ble://PingView-f7c4");
+        p.start_link("ble://PingView-f7c4", Model::PingRx);
         p.set_battery(Some(battery));
-        p.start_link("/dev/ttyACM0");
+        p.start_link("/dev/ttyACM0", Model::PingRx);
         assert_eq!(p.lock().receiver.battery, None, "a new link starts without one");
     }
 
     #[test]
     fn requests_assist_for_aircraft_without_callsign() {
         let p = Pipeline::new(None, true, SharedRegistry::default());
-        p.start_link("test");
+        p.start_link("test", Model::PingRx);
         let mut f = sample();
         f.flags &= !0x0010; // no callsign
         let frame = v1_frame(0, 246, &payload(&f), 184);
@@ -344,7 +392,7 @@ mod tests {
         let registry = SharedRegistry::default();
         let _ = registry.set(Registry::from_text("7C6B2D;VH-VGF;A320;00;AIRBUS A-320;2010;;\n".into()));
         let p = Pipeline::new(None, false, registry);
-        p.start_link("test");
+        p.start_link("test", Model::PingRx);
         let mut f = sample();
         f.flags &= !0x0010; // no callsign from the Ping
         p.ingest(&v1_frame(0, 246, &payload(&f), 184), 0.0, now_utc());
@@ -357,7 +405,7 @@ mod tests {
     #[test]
     fn network_aircraft_are_tagged_and_merged() {
         let p = Pipeline::new(None, false, SharedRegistry::default());
-        p.start_link("test");
+        p.start_link("test", Model::PingRx);
         p.ingest(&v1_frame(0, 246, &payload(&sample()), 184), 100.0, now_utc());
         let net = |hex: &str| AreaAircraft {
             hex: hex.into(),
@@ -379,7 +427,7 @@ mod tests {
     #[test]
     fn real_capture_yields_aircraft() {
         let p = Pipeline::new(None, false, SharedRegistry::default());
-        p.start_link("fixture");
+        p.start_link("fixture", Model::PingRx);
         p.ingest(FIXTURE, 0.0, now_utc());
         let s = p.lock();
         assert!(s.identifier.confirmed());

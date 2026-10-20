@@ -1,3 +1,5 @@
 # PingView receiver (STM32 USB CDC bridge for a uAvionix pingRX Pro).
 # Grants the logged-in user access to the serial port without sudo.
 SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", TAG+="uaccess"
+# ADSBee 1090 (Raspberry Pi Pico USB CDC ID).
+SUBSYSTEM=="tty", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="000a", TAG+="uaccess"
