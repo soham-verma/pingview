@@ -119,7 +119,9 @@ the folder from the History panel.
 ## Development
 
 The built-in world map (~189 MB) is too big for git. Fetch it once before
-building (needs the [`pmtiles` CLI](https://github.com/protomaps/go-pmtiles)):
+building. It downloads from this repo's `basemap-<build>` release, and falls
+back to extracting from Protomaps with the
+[`pmtiles` CLI](https://github.com/protomaps/go-pmtiles):
 
 ```sh
 scripts/fetch_basemap.sh   # writes basemap-data/world.pmtiles, checksum-verified
